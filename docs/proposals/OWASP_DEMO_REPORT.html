@@ -123,6 +123,10 @@
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; gap: 12px; }
         .section-title .count-pill { font-size: 11px; background: var(--surface-2); color: var(--text-2); padding: 3px 10px; border-radius: 99px; font-weight: 500; }
         code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        .reference-cell { text-align: center; }
+        .reference-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--accent-soft); color: var(--accent); text-decoration: none; border-radius: 6px; border: 1px solid var(--border); transition: all 0.15s; }
+        .reference-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+        .reference-btn svg { width: 14px; height: 14px; }
         .finding-details { color: var(--text-2); font-size: 12px; line-height: 1.6; }
         .resolution-text { color: var(--text-2); font-size: 12px; line-height: 1.6; }
         .compliance-gauge { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
@@ -474,11 +478,12 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 8%;">ID</th>
-                                    <th style="width: 22%;">Vulnerability</th>
-                                    <th style="width: 42%;">AWS Controls Evaluated</th>
-                                    <th style="width: 14%;">Status</th>
+                                    <th style="width: 7%;">ID</th>
+                                    <th style="width: 20%;">Vulnerability</th>
+                                    <th style="width: 38%;">AWS Controls Evaluated</th>
+                                    <th style="width: 13%;">Status</th>
                                     <th style="width: 14%;">Coverage</th>
+                                    <th style="width: 8%;">Docs</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -488,6 +493,7 @@
                                     <td class="finding-details">BR-05 guardrail presence · OW-01 PROMPT_ATTACK strength · OW-02 KB source trust</td>
                                     <td><span class="status non-compliant">Non-Compliant</span></td>
                                     <td class="finding-details">full + partial</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/" target="_blank" class="reference-btn" title="OWASP LLM01 Prompt Injection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM02</code></td>
@@ -495,6 +501,7 @@
                                     <td class="finding-details">BR-04 logging · BR-09 KB encryption · OW-03 PII redaction · OW-04 log retention · OW-17 KB retrieval policy</td>
                                     <td><span class="status non-compliant">Non-Compliant</span></td>
                                     <td class="finding-details">full</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/" target="_blank" class="reference-btn" title="OWASP LLM02 Sensitive Information Disclosure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM03</code></td>
@@ -502,6 +509,7 @@
                                     <td class="finding-details">AC-05 ECR encryption · OW-05 model provenance · OW-06 JumpStart/Marketplace · OW-16 image scan</td>
                                     <td><span class="status partial">Partial</span></td>
                                     <td class="finding-details">partial-app-layer</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm032025-supply-chain/" target="_blank" class="reference-btn" title="OWASP LLM03 Supply Chain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM04</code></td>
@@ -509,6 +517,7 @@
                                     <td class="finding-details">SM-05 MLOps · SM-07 Model Monitor · OW-07 KB ingestion role scope</td>
                                     <td><span class="status compliant">Compliant</span></td>
                                     <td class="finding-details">partial-app-layer</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/" target="_blank" class="reference-btn" title="OWASP LLM04 Data and Model Poisoning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM05</code></td>
@@ -516,6 +525,7 @@
                                     <td class="finding-details">OW-08 guardrail output filter (compensating only — primary control is at the application layer)</td>
                                     <td><span class="status partial">Partial</span></td>
                                     <td class="finding-details">compensating</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/" target="_blank" class="reference-btn" title="OWASP LLM05 Improper Output Handling"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM06</code></td>
@@ -523,6 +533,7 @@
                                     <td class="finding-details">BR-01/08/10 IAM · AC-02 IAM Full Access · OW-09 action-group wildcards · OW-10 HITL · OW-18 sub-agents</td>
                                     <td><span class="status non-compliant">Non-Compliant</span></td>
                                     <td class="finding-details">full + partial</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm062025-excessive-agency/" target="_blank" class="reference-btn" title="OWASP LLM06 Excessive Agency"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM07</code></td>
@@ -530,6 +541,7 @@
                                     <td class="finding-details">BR-07 prompt management · OW-11 managed prompts</td>
                                     <td><span class="status partial">Partial</span></td>
                                     <td class="finding-details">partial-app-layer</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/" target="_blank" class="reference-btn" title="OWASP LLM07 System Prompt Leakage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM08</code></td>
@@ -537,6 +549,7 @@
                                     <td class="finding-details">BR-09 KB encryption · OW-12 vector store network · OW-13 multi-tenant KB</td>
                                     <td><span class="status compliant">Compliant</span></td>
                                     <td class="finding-details">full</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/" target="_blank" class="reference-btn" title="OWASP LLM08 Vector and Embedding Weaknesses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM09</code></td>
@@ -544,6 +557,7 @@
                                     <td class="finding-details">OW-14 contextual grounding · SM-07 Model Monitor</td>
                                     <td><span class="status compliant">Compliant</span></td>
                                     <td class="finding-details">full</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm092025-misinformation/" target="_blank" class="reference-btn" title="OWASP LLM09 Misinformation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>LLM10</code></td>
@@ -551,6 +565,7 @@
                                     <td class="finding-details">OW-15 proactive (guardrail wordPolicy) + OW-15 detective (CloudWatch alarms / Budgets)</td>
                                     <td><span class="status compliant">Compliant</span></td>
                                     <td class="finding-details">full</td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/" target="_blank" class="reference-btn" title="OWASP LLM10 Unbounded Consumption"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -573,32 +588,33 @@
                             <thead>
                                 <tr>
                                     <th style="width: 7%;">Check</th>
-                                    <th style="width: 30%;">Name</th>
-                                    <th style="width: 10%;">Severity</th>
-                                    <th style="width: 12%;">OWASP</th>
-                                    <th style="width: 18%;">Delivery Module</th>
-                                    <th style="width: 23%;">Coverage Type</th>
+                                    <th style="width: 27%;">Name</th>
+                                    <th style="width: 9%;">Severity</th>
+                                    <th style="width: 11%;">OWASP</th>
+                                    <th style="width: 16%;">Delivery Module</th>
+                                    <th style="width: 22%;">Coverage Type</th>
+                                    <th style="width: 8%;">AWS Docs</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td><code>OW-01</code></td><td class="col-domain">Guardrail Prompt-Attack Filter Strength</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM01</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td></tr>
-                                <tr><td><code>OW-02</code></td><td class="col-domain">Knowledge Base Source Trust</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM01/03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
-                                <tr><td><code>OW-03</code></td><td class="col-domain">Guardrail PII Redaction</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td></tr>
-                                <tr><td><code>OW-04</code></td><td class="col-domain">Invocation Log Retention &amp; Access</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
-                                <tr><td><code>OW-05</code></td><td class="col-domain">Imported/Custom Model Provenance</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
-                                <tr><td><code>OW-06</code></td><td class="col-domain">SageMaker JumpStart &amp; Marketplace Inventory</td><td><span class="severity low">Low</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td></tr>
-                                <tr><td><code>OW-07</code></td><td class="col-domain">Knowledge Base Ingestion Role Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM04</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
-                                <tr><td><code>OW-08</code></td><td class="col-domain">Guardrail Output Filter</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM05</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">compensating</td></tr>
-                                <tr><td><code>OW-09</code></td><td class="col-domain">Agent Action-Group Wildcard Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td></tr>
-                                <tr><td><code>OW-10</code></td><td class="col-domain">Human-in-the-Loop &amp; Confirmation Flow</td><td><span class="severity na">Info</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td></tr>
-                                <tr><td><code>OW-11</code></td><td class="col-domain">System Prompt Protection</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM07</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">partial-app-layer</td></tr>
-                                <tr><td><code>OW-12</code></td><td class="col-domain">Vector Store Network Isolation</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td></tr>
-                                <tr><td><code>OW-13</code></td><td class="col-domain">Multi-Tenant Knowledge Base Isolation</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (heuristic)</td></tr>
-                                <tr><td><code>OW-14</code></td><td class="col-domain">Contextual Grounding Guardrail</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM09</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td></tr>
-                                <tr><td><code>OW-15</code></td><td class="col-domain">Invocation Rate, Token &amp; Cost Controls</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM10</span></td><td class="finding-details">bedrock + owasp_assessments</td><td class="finding-details">partial-app-layer (split)</td></tr>
-                                <tr><td><code>OW-16</code></td><td class="col-domain">Container Image Scanning</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">agentcore inline</td><td class="finding-details">partial-app-layer</td></tr>
-                                <tr><td><code>OW-17</code></td><td class="col-domain">Knowledge Base Retrieval Access Policy</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td></tr>
-                                <tr><td><code>OW-18</code></td><td class="col-domain">Multi-Agent Sub-Agent Inventory</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-01</code></td><td class="col-domain">Guardrail Prompt-Attack Filter Strength</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM01</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-content-filters.html" target="_blank" class="reference-btn" title="Bedrock content filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-02</code></td><td class="col-domain">Knowledge Base Source Trust</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM01/03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-security.html" target="_blank" class="reference-btn" title="KB security — source bucket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-03</code></td><td class="col-domain">Guardrail PII Redaction</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-sensitive-filters.html" target="_blank" class="reference-btn" title="Bedrock sensitive info filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-04</code></td><td class="col-domain">Invocation Log Retention &amp; Access</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html" target="_blank" class="reference-btn" title="Model invocation logging"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-05</code></td><td class="col-domain">Imported/Custom Model Provenance</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html" target="_blank" class="reference-btn" title="Bedrock custom models"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-06</code></td><td class="col-domain">SageMaker JumpStart &amp; Marketplace Inventory</td><td><span class="severity low">Low</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/sagemaker/latest/dg/jumpstart.html" target="_blank" class="reference-btn" title="SageMaker JumpStart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-07</code></td><td class="col-domain">Knowledge Base Ingestion Role Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM04</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" class="reference-btn" title="KB IAM permissions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-08</code></td><td class="col-domain">Guardrail Output Filter</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM05</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">compensating</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-word-filters.html" target="_blank" class="reference-btn" title="Bedrock word/topic filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-09</code></td><td class="col-domain">Agent Action-Group Wildcard Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html" target="_blank" class="reference-btn" title="Bedrock Agents IAM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-10</code></td><td class="col-domain">Human-in-the-Loop &amp; Confirmation Flow</td><td><span class="severity na">Info</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-action-groups.html" target="_blank" class="reference-btn" title="Bedrock Agents action groups"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-11</code></td><td class="col-domain">System Prompt Protection</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM07</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html" target="_blank" class="reference-btn" title="Bedrock Prompt Management"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-12</code></td><td class="col-domain">Vector Store Network Isolation</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html" target="_blank" class="reference-btn" title="OpenSearch Serverless networking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-13</code></td><td class="col-domain">Multi-Tenant Knowledge Base Isolation</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (heuristic)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multi-tenant.html" target="_blank" class="reference-btn" title="KB multi-tenant filtering"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-14</code></td><td class="col-domain">Contextual Grounding Guardrail</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM09</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-contextual-grounding-check.html" target="_blank" class="reference-btn" title="Contextual grounding filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-15</code></td><td class="col-domain">Invocation Rate, Token &amp; Cost Controls</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM10</span></td><td class="finding-details">bedrock + owasp_assessments</td><td class="finding-details">partial-app-layer (split)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-cw.html" target="_blank" class="reference-btn" title="Bedrock CloudWatch monitoring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-16</code></td><td class="col-domain">Container Image Scanning</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">agentcore inline</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html" target="_blank" class="reference-btn" title="ECR image scanning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-17</code></td><td class="col-domain">Knowledge Base Retrieval Access Policy</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" class="reference-btn" title="KB resource-based policies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
+                                <tr><td><code>OW-18</code></td><td class="col-domain">Multi-Agent Sub-Agent Inventory</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent.html" target="_blank" class="reference-btn" title="Bedrock multi-agent collaboration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -609,72 +625,111 @@
         <!-- ==================== FINDINGS PREVIEW ==================== -->
         <section id="findings-preview" class="section">
             <div class="section-title">
-                Findings Preview — New Compliance Column in Action
+                Findings Preview — New Compliance Column + Remediation
                 <span class="count-pill">From sample-reports/security_assessment_single_account.html</span>
             </div>
+
             <div class="card">
-                <div class="card-header"><h3>Sample Findings with <code>Compliance_Mappings</code></h3></div>
+                <div class="card-header"><h3>How remediation data is delivered</h3></div>
+                <div class="card-body">
+                    <p class="finding-details" style="margin-bottom: 10px;">Every OWASP finding carries three remediation fields emitted by <code>create_finding()</code>, matching the pattern the existing 51 service-level checks already use:</p>
+                    <ul style="color: var(--text-2); font-size: 12px; line-height: 1.7; padding-left: 22px; margin-bottom: 12px;">
+                        <li><strong style="color: var(--text);">Finding_Details</strong> — the exact mis-configuration observed, with resource identifiers (guardrail ID, KB name, log-group name).</li>
+                        <li><strong style="color: var(--text);">Resolution</strong> — a prescriptive, step-by-step fix, often naming the specific API call (<code>logs:PutRetentionPolicy</code>), field (<code>sensitiveInformationPolicy.piiEntities</code>), or parameter (<code>inputStrength=HIGH</code>) to change.</li>
+                        <li><strong style="color: var(--text);">Reference</strong> — a deep link into the relevant AWS documentation page, rendered as an icon button in the Docs column so reviewers can jump straight to the docs.</li>
+                    </ul>
+                    <p class="finding-details">This is identical to the contract the existing BR-/SM-/AC- checks honor, so the new OWASP rows blend into the same findings table without any UI-template work beyond adding the Compliance column.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3>Sample Findings with <code>Compliance_Mappings</code> + Remediation</h3></div>
                 <div class="card-body" style="padding: 0;">
                     <div class="table-wrap">
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 8%;">Check</th>
-                                    <th style="width: 26%;">Finding</th>
-                                    <th style="width: 28%;">Details</th>
-                                    <th style="width: 18%;">Compliance</th>
-                                    <th style="width: 10%;">Severity</th>
-                                    <th style="width: 10%;">Status</th>
+                                    <th style="width: 7%;">Check</th>
+                                    <th style="width: 22%;">Finding</th>
+                                    <th style="width: 26%;">Resolution / Remediation</th>
+                                    <th style="width: 15%;">Compliance</th>
+                                    <th style="width: 8%;">Severity</th>
+                                    <th style="width: 8%;">Status</th>
+                                    <th style="width: 14%;">AWS Docs</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><code>OW-01</code></td>
-                                    <td class="col-domain">Prompt-Attack Filter Strong</td>
-                                    <td class="finding-details">Guardrail 'prod-guardrail' has PROMPT_ATTACK filter at HIGH strength on both input and output.</td>
+                                    <td>
+                                        <div class="col-domain">Prompt-Attack Filter Strong</div>
+                                        <div class="finding-details">Guardrail 'prod-guardrail' has PROMPT_ATTACK at HIGH on input and output.</div>
+                                    </td>
+                                    <td class="resolution-text">No action required. The guardrail is already at the strongest prompt-attack filter setting.</td>
                                     <td><span class="framework-badge owasp">LLM01</span> <span class="finding-details">full</span></td>
                                     <td><span class="severity na">Info</span></td>
                                     <td><span class="status passed">Passed</span></td>
+                                    <td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-content-filters.html" target="_blank" class="reference-btn" title="Bedrock content filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>OW-03</code></td>
-                                    <td class="col-domain">PII Redaction Incomplete</td>
-                                    <td class="finding-details">Guardrail 'prod-guardrail' has piiEntities configured but is missing CREDIT_DEBIT_CARD_NUMBER.</td>
+                                    <td>
+                                        <div class="col-domain">PII Redaction Incomplete</div>
+                                        <div class="finding-details">Guardrail 'prod-guardrail' has piiEntities configured but is missing CREDIT_DEBIT_CARD_NUMBER.</div>
+                                    </td>
+                                    <td class="resolution-text">Add BLOCK or ANONYMIZE entries to the guardrail's sensitiveInformationPolicy for CREDIT_DEBIT_CARD_NUMBER (and any other PII types you process).</td>
                                     <td><span class="framework-badge owasp">LLM02</span> <span class="finding-details">full</span></td>
                                     <td><span class="severity medium">Medium</span></td>
                                     <td><span class="status failed">Failed</span></td>
+                                    <td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-sensitive-filters.html" target="_blank" class="reference-btn" title="Bedrock sensitive info filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>OW-04</code></td>
-                                    <td class="col-domain">Invocation Log Retention Insufficient</td>
-                                    <td class="finding-details">Bedrock invocation logs go to CloudWatch log group '/aws/bedrock/invocations' — retention is 7 days (&lt; 30 minimum).</td>
+                                    <td>
+                                        <div class="col-domain">Invocation Log Retention Insufficient</div>
+                                        <div class="finding-details">Bedrock invocation logs go to CloudWatch log group '/aws/bedrock/invocations' — retention is 7 days (&lt; 30 minimum).</div>
+                                    </td>
+                                    <td class="resolution-text">Set CloudWatch log group retention to at least 30 days via <code>logs:PutRetentionPolicy</code> or the console → Log groups → Edit retention.</td>
                                     <td><span class="framework-badge owasp">LLM02</span> <span class="finding-details">partial</span></td>
                                     <td><span class="severity medium">Medium</span></td>
                                     <td><span class="status failed">Failed</span></td>
+                                    <td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html" target="_blank" class="reference-btn" title="Bedrock invocation logging"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>OW-09</code></td>
-                                    <td class="col-domain">Action Group Has Wildcard Permissions</td>
-                                    <td class="finding-details">'PlaceOrder' on agent 'OrderBot' runs Lambda role 'PlaceOrderRole' which has 's3:*' on '*'. Excessive Agency risk.</td>
+                                    <td>
+                                        <div class="col-domain">Action Group Has Wildcard Permissions</div>
+                                        <div class="finding-details">'PlaceOrder' on agent 'OrderBot' runs Lambda role 'PlaceOrderRole' which has s3:* on *. Excessive Agency risk.</div>
+                                    </td>
+                                    <td class="resolution-text">Rewrite the Lambda execution role's inline policies so Action and Resource are scoped to the exact S3 buckets the action group needs (e.g. <code>arn:aws:s3:::orders/*</code>) and remove Action <code>s3:*</code>.</td>
                                     <td><span class="framework-badge owasp">LLM06</span> <span class="finding-details">full</span></td>
                                     <td><span class="severity high">High</span></td>
                                     <td><span class="status failed">Failed</span></td>
+                                    <td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html" target="_blank" class="reference-btn" title="Bedrock Agents IAM permissions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>OW-15</code></td>
-                                    <td class="col-domain">Detective Consumption Controls Present</td>
-                                    <td class="finding-details">After-the-fact monitoring for Bedrock is configured: 1 CloudWatch alarm (BedrockInvocationSpike).</td>
+                                    <td>
+                                        <div class="col-domain">Detective Consumption Controls Present</div>
+                                        <div class="finding-details">After-the-fact monitoring for Bedrock is configured: 1 CloudWatch alarm (BedrockInvocationSpike).</div>
+                                    </td>
+                                    <td class="resolution-text">No action required. Consider adding an AWS Budget scoped to Bedrock for a second layer of cost detection.</td>
                                     <td><span class="framework-badge owasp">LLM10</span> <span class="finding-details">partial</span></td>
                                     <td><span class="severity na">Info</span></td>
                                     <td><span class="status passed">Passed</span></td>
+                                    <td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-cw.html" target="_blank" class="reference-btn" title="Bedrock CloudWatch monitoring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                                 <tr>
                                     <td><code>OW-17</code></td>
-                                    <td class="col-domain">KB Retrieval Policy Missing: SupportKB</td>
-                                    <td class="finding-details">KB 'SupportKB' has no resource-based policy. Any principal with bedrock-agent:Retrieve can query it — direct RAG disclosure risk.</td>
+                                    <td>
+                                        <div class="col-domain">KB Retrieval Policy Missing: SupportKB</div>
+                                        <div class="finding-details">KB 'SupportKB' has no resource-based policy. Any principal with bedrock-agent:Retrieve can query it — direct RAG disclosure risk.</div>
+                                    </td>
+                                    <td class="resolution-text">Attach a resource-based policy to the KB restricting <code>bedrock-agent:Retrieve</code> and <code>bedrock-agent:RetrieveAndGenerate</code> to the specific IAM roles that need to query it. Use PutResourcePolicy on the knowledge-base ARN.</td>
                                     <td><span class="framework-badge owasp">LLM02</span> <span class="finding-details">full</span></td>
                                     <td><span class="severity high">High</span></td>
                                     <td><span class="status failed">Failed</span></td>
+                                    <td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" class="reference-btn" title="KB IAM and resource-based policies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
                             </tbody>
                         </table>
