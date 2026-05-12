@@ -251,13 +251,17 @@ def _evaluate_single_guardrail(
 
     # ----- OW-08: Output filter compensating control (LLM05) -----
     # We look for ANY output-side protection: contentPolicy OUTPUT filter,
-    # non-empty wordPolicy.managedWordLists or wordsConfig, or topicPolicy.
+    # non-empty wordPolicy.managedWordLists or words, or topicPolicy.
     has_output_content_filter = any(
         (f.get("outputStrength") or "").upper() in ("LOW", "MEDIUM", "HIGH")
         for f in filters
     )
     word_policy = detail.get("wordPolicy", {}) or {}
-    has_word_lists = bool(word_policy.get("wordsConfig") or word_policy.get("managedWordLists"))
+    # Note: GetGuardrail returns "words"; the request schema uses "wordsConfig".
+    # Accept either so the check is robust across API versions.
+    _word_list = word_policy.get("words") or word_policy.get("wordsConfig") or []
+    _managed_word_lists = word_policy.get("managedWordLists") or []
+    has_word_lists = bool(_word_list or _managed_word_lists)
     topic_policy = detail.get("topicPolicy", {}) or {}
     has_topics = bool(topic_policy.get("topicsConfig"))
 
@@ -352,12 +356,10 @@ def _evaluate_single_guardrail(
         ))
 
     # ----- OW-15: Input size limit (proactive leg of Unbounded Consumption) -----
-    # wordPolicy.wordsConfig or managedWordLists act as proactive token
-    # limiters; alternatively a non-empty topicPolicy with input-scope
-    # effectively enforces a word/topic envelope.
-    has_input_word_limit = bool(
-        word_policy.get("wordsConfig") or word_policy.get("managedWordLists")
-    )
+    # wordPolicy.words (response) / wordsConfig (request) or managedWordLists
+    # act as proactive token limiters; alternatively a non-empty topicPolicy
+    # with input-scope effectively enforces a word/topic envelope.
+    has_input_word_limit = bool(_word_list or _managed_word_lists)
     if has_input_word_limit:
         results.append(_owasp_finding(
             check_id="OW-15",

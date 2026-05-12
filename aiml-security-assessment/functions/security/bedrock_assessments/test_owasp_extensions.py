@@ -311,6 +311,24 @@ class TestInputSizeLimit:
         assert ow15[0]["Status"] == "Failed"
         assert "proactive" in ow15[0]["Finding_Details"].lower()
 
+    def test_live_api_response_shape_words_passes(self):
+        """Regression test: GetGuardrail response uses 'words' not 'wordsConfig'.
+
+        Discovered during live AWS validation (2026-05) — the request schema
+        uses 'wordsConfig' but the response uses 'words'. Both must be
+        accepted so the check doesn't false-negative on real guardrails.
+        """
+        gr = _guardrail(word_policy={"words": [{"text": "confidential"}]})
+        client = _mock_client({"gr1": gr})
+        out = evaluate_guardrail_owasp_checks(
+            client, [{"id": "gr1", "name": "GR1"}]
+        )
+        ow15 = _by_check_id(out, "OW-15")
+        assert ow15[0]["Status"] == "Passed"
+        # Also verify OW-08 sees the word list as an output-side control
+        ow08 = _by_check_id(out, "OW-08")
+        assert ow08[0]["Status"] == "Passed"
+
 
 # ---------------------------------------------------------------------------
 # Multiple guardrails + resilience
