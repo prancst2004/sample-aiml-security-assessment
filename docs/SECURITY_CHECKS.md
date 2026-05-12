@@ -1,6 +1,6 @@
 # Security Checks Reference
 
-This document provides a comprehensive reference for all 51 security checks performed by the AI/ML Security Assessment framework.
+This document provides a comprehensive reference for all 69 security checks performed by the AI/ML Security Assessment framework (51 service-level checks plus 18 OWASP LLM Top 10 extensions).
 
 ## Table of Contents
 
@@ -11,6 +11,7 @@ This document provides a comprehensive reference for all 51 security checks perf
 - [Amazon SageMaker AI Security Checks (25)](#amazon-sagemaker-ai-security-checks-25)
 - [Amazon Bedrock Security Checks (13)](#amazon-bedrock-security-checks-13)
 - [Amazon Bedrock AgentCore Security Checks (13)](#amazon-bedrock-agentcore-security-checks-13)
+- [OWASP LLM Top 10 Extensions (18)](#owasp-llm-top-10-extensions-18)
 
 ---
 
@@ -23,6 +24,7 @@ The framework evaluates your AI/ML workloads against AWS security best practices
 | Amazon SageMaker AI | 25 | Security Hub controls, encryption, network isolation, IAM, MLOps |
 | Amazon Bedrock | 13 | Guardrails, encryption, VPC endpoints, IAM permissions, logging |
 | Amazon Bedrock AgentCore | 13 | VPC configuration, encryption, observability, resource policies |
+| OWASP LLM Top 10 Extensions | 18 | Prompt injection, sensitive info disclosure, supply chain, data/model poisoning, improper output handling, excessive agency, system prompt leakage, vector/embedding weaknesses, misinformation, unbounded consumption |
 
 ---
 
@@ -35,6 +37,7 @@ Each security check has a unique identifier with a service prefix:
 | **SM-XX** | Amazon SageMaker | SM-01, SM-25 |
 | **BR-XX** | Amazon Bedrock | BR-01, BR-13 |
 | **AC-XX** | Amazon Bedrock AgentCore | AC-01, AC-13 |
+| **OW-XX** | OWASP LLM Top 10 Extensions | OW-01, OW-18 |
 
 ---
 
@@ -333,9 +336,126 @@ Each security check has a unique identifier with a service prefix:
 
 ---
 
+## OWASP LLM Top 10 Extensions (18)
+
+These checks extend the service assessments with targeted controls mapped to the [OWASP Top 10 for LLM Applications (2025)](https://genai.owasp.org/llm-top-10/). Findings emitted by these checks carry framework mappings in the `Compliance_Mappings` field and drive the Compliance Dashboard + OWASP detail sections of the HTML report.
+
+Seven checks (OW-01, OW-03, OW-08, OW-11, OW-14, OW-15, OW-16) ride on existing service Lambdas by extending BR-05 / BR-07 / AC-05. The remaining eleven run in a dedicated `owasp_assessments/` Lambda.
+
+### OW-01: Guardrail Prompt-Attack Filter Strength
+
+- **Severity:** High
+- **OWASP Mapping:** LLM01 Prompt Injection
+- **Description:** Verifies every Bedrock guardrail includes a PROMPT_ATTACK content filter with HIGH input and output strength.
+
+### OW-02: Knowledge Base Source Trust
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM01 Prompt Injection / LLM03 Supply Chain
+- **Description:** For each Bedrock Knowledge Base S3 data source, checks that the source bucket is not public (complete Block Public Access + no public bucket policy). Public source buckets are an indirect prompt-injection vector.
+
+### OW-03: Guardrail PII Redaction
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM02 Sensitive Information Disclosure
+- **Description:** Verifies guardrails have `sensitiveInformationPolicy` configured with BLOCK or ANONYMIZE for EMAIL, PHONE, SSN, and CREDIT_DEBIT_CARD_NUMBER at minimum.
+
+### OW-04: Invocation Log Retention & Access
+
+- **Severity:** Medium (High when S3 destination is public)
+- **OWASP Mapping:** LLM02 Sensitive Information Disclosure
+- **Description:** Confirms Bedrock model-invocation logging is enabled. Validates CloudWatch log-group retention is at least 30 days; validates S3 destination buckets are not public.
+
+### OW-05: Imported / Custom Model Provenance
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM03 Supply Chain
+- **Description:** Lists Bedrock custom models and flags any whose training-data source bucket is unreachable (cross-account signal) or whose provenance is undocumented.
+
+### OW-06: SageMaker JumpStart & Marketplace Inventory
+
+- **Severity:** Low (informational)
+- **OWASP Mapping:** LLM03 Supply Chain
+- **Description:** Enumerates SageMaker model packages sourced from JumpStart or AWS Marketplace for customer supply-chain review. No hard pass/fail.
+
+### OW-07: Knowledge Base Ingestion Role Scope
+
+- **Severity:** High
+- **OWASP Mapping:** LLM04 Data and Model Poisoning
+- **Description:** Inspects the IAM role attached to KB data-source ingestion. Fails when inline policies use dangerous wildcards (`s3:*` on `*`, `Action: "*"` on `Resource: "*"`).
+
+### OW-08: Guardrail Output Filter (Compensating)
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM05 Improper Output Handling (compensating)
+- **Description:** Verifies each guardrail has at least one output-side control — content filter outputStrength, wordPolicy, or topicPolicy. Does not replace application-layer output sanitization.
+
+### OW-09: Agent Action-Group Wildcard Scope
+
+- **Severity:** High
+- **OWASP Mapping:** LLM06 Excessive Agency
+- **Description:** For every Bedrock Agent action group, resolves the executor Lambda's execution role and flags inline policies with `Action: "*"` / `service:*` on `Resource: "*"`.
+
+### OW-10: Human-in-the-Loop & Confirmation Flow
+
+- **Severity:** Informational
+- **OWASP Mapping:** LLM06 Excessive Agency
+- **Description:** Per-agent inventory of action groups with `requireConfirmation = ENABLED` vs. those that run without confirmation. Surfaces autonomy posture for customer review.
+
+### OW-11: System Prompt Protection
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM07 System Prompt Leakage (partial / application-layer)
+- **Description:** Detects whether Bedrock Prompt Management is in use. Inline prompts in application code are outside AWS control-plane scope.
+
+### OW-12: Vector Store Network Isolation
+
+- **Severity:** High
+- **OWASP Mapping:** LLM08 Vector and Embedding Weaknesses
+- **Description:** Resolves each Bedrock KB's vector store. Fails on OpenSearch Serverless collections with `AllowFromPublic=true` network policies, or on Aurora instances with `PubliclyAccessible=true`. External stores (Pinecone, Redis, MongoDB Atlas) emit N/A.
+
+### OW-13: Multi-Tenant Knowledge Base Isolation
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM08 Vector and Embedding Weaknesses
+- **Description:** Heuristic — warns when multiple Bedrock KBs share a single OpenSearch Serverless collection. Per-tenant filtering becomes the application's responsibility.
+
+### OW-14: Contextual Grounding Guardrail
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM09 Misinformation
+- **Description:** Verifies each Bedrock guardrail has `contextualGroundingPolicy` enabled with GROUNDING + RELEVANCE filters for RAG workloads.
+
+### OW-15: Invocation Rate, Token & Cost Controls
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM10 Unbounded Consumption
+- **Description:** Two-legged check: (a) proactive leg (in Bedrock Lambda) — guardrail `wordPolicy` blocks oversized inputs; (b) detective leg (in OWASP Lambda) — CloudWatch alarms on `AWS/Bedrock` / `AWS/SageMaker` metrics OR AWS Budgets scoped to those services. Fails if neither is present.
+
+### OW-16: Container Image Scanning
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM03 Supply Chain
+- **Description:** Verifies ECR repositories used by SageMaker models and AgentCore runtimes have `imageScanningConfiguration.scanOnPush = true`.
+
+### OW-17: Knowledge Base Retrieval Access Policy
+
+- **Severity:** High
+- **OWASP Mapping:** LLM02 Sensitive Information Disclosure
+- **Description:** For each Bedrock KB, checks for a resource-based policy restricting `bedrock-agent:Retrieve` and `RetrieveAndGenerate` to named IAM principals.
+
+### OW-18: Multi-Agent Sub-Agent Inventory
+
+- **Severity:** Medium
+- **OWASP Mapping:** LLM06 Excessive Agency (2025 multi-agent revision)
+- **Description:** Detects orchestrator agents by flagging those whose action-group Lambda role is permitted `bedrock-agent:InvokeAgent`. Surfaces agent-calling-agent trust boundaries for review.
+
+---
+
 ## Additional Resources
 
 - [Amazon SageMaker Security Best Practices](https://docs.aws.amazon.com/sagemaker/latest/dg/security.html)
 - [Amazon Bedrock Security](https://docs.aws.amazon.com/bedrock/latest/userguide/security.html)
 - [AWS Security Hub SageMaker Controls](https://docs.aws.amazon.com/securityhub/latest/userguide/sagemaker-controls.html)
+- [OWASP Top 10 for LLM Applications (2025)](https://genai.owasp.org/llm-top-10/)
 - [AWS Well-Architected Framework - Security Pillar](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html)

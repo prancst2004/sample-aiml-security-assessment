@@ -4,7 +4,7 @@
 
 **Open-source automated security scanner for Amazon Bedrock, Amazon SageMaker AI, and Amazon Bedrock AgentCore** — Built on [AWS Well-Architected Framework (Generative AI Lens)](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/generative-ai-lens.html)
 
-Cloud security automation with **[52 security checks](docs/SECURITY_CHECKS.md)** for your generative AI and machine learning workloads. Identify IAM misconfigurations, encryption gaps, network isolation issues, and compliance violations with interactive HTML reports and actionable remediation guidance.
+Cloud security automation with **[69 security checks](docs/SECURITY_CHECKS.md)** for your generative AI and machine learning workloads — 51 service-level checks plus 18 OWASP LLM Top 10 (2025) extensions. Identify IAM misconfigurations, encryption gaps, network isolation issues, prompt-injection risks, and compliance violations with interactive HTML reports and actionable remediation guidance.
 
 ---
 
@@ -37,7 +37,7 @@ The framework generates professional, interactive security assessment reports wi
 
 - **Executive Summary** with severity counts and service breakdown
 - **Priority Recommendations** highlighting critical issues requiring immediate attention
-- **[52 Security Checks](docs/SECURITY_CHECKS.md)** across Amazon Bedrock, Amazon SageMaker AI, and Amazon Bedrock AgentCore
+- **[69 Security Checks](docs/SECURITY_CHECKS.md)** across Amazon Bedrock, Amazon SageMaker AI, Amazon Bedrock AgentCore, plus OWASP LLM Top 10 (2025) coverage
 - **Interactive Filtering** by account, service, severity, and status
 - **Light/Dark Mode Toggle** with persistent user preference
 - **Text Search** across all findings with real-time results
@@ -90,6 +90,7 @@ Designed for workloads using [Amazon Bedrock](https://aws.amazon.com/bedrock/), 
 - **[Amazon Bedrock](docs/SECURITY_CHECKS.md#amazon-bedrock-security-checks-14)** (14 checks) - Guardrails, encryption, Amazon VPC endpoints, AWS IAM permissions, model invocation logging
 - **[Amazon SageMaker AI](docs/SECURITY_CHECKS.md#amazon-sagemaker-ai-security-checks-25)** (25 checks) - AWS Security Hub controls (SageMaker.1-5), encryption, network isolation, AWS IAM, MLOps
 - **[Amazon Bedrock AgentCore](docs/SECURITY_CHECKS.md#amazon-bedrock-agentcore-security-checks-13)** (13 checks) - Amazon VPC configuration, encryption, observability, resource policies
+- **[OWASP LLM Top 10 Extensions](docs/SECURITY_CHECKS.md#owasp-llm-top-10-extensions-18)** (18 checks) - Prompt injection, sensitive info disclosure, supply chain, data/model poisoning, improper output handling, excessive agency, system prompt leakage, vector/embedding weaknesses, misinformation, unbounded consumption
 
 **Deployment Options:**
 - **Single-Account**: Assess security in one AWS account
@@ -111,7 +112,7 @@ This tool operates within the [AWS Shared Responsibility Model](https://aws.amaz
 
 **No guarantee of security or compliance.** This framework identifies common misconfigurations based on AWS best practices and the AWS Well-Architected Framework. It does not cover all possible security risks, does not replace formal compliance audits (SOC 2, HIPAA, and similar), and does not guarantee that your workloads are secure. Use the results as one input into your broader security program.
 
-**52 checks across three services.** The assessment covers Amazon Bedrock, Amazon SageMaker AI, and Amazon Bedrock AgentCore. Other AI/ML services (Amazon Comprehend, Amazon Rekognition, Amazon Textract, and others) are not currently assessed.
+**69 checks across three services plus OWASP LLM Top 10 extensions.** The assessment covers Amazon Bedrock, Amazon SageMaker AI, and Amazon Bedrock AgentCore, with 18 additional checks mapped to the OWASP Top 10 for LLM Applications (2025). Other AI/ML services (Amazon Comprehend, Amazon Rekognition, Amazon Textract, and others) are not currently assessed.
 
 ---
 
@@ -279,6 +280,7 @@ Deploy [2-aiml-security-codebuild.yaml](deployment/2-aiml-security-codebuild.yam
    - Amazon Bedrock Assessment AWS Lambda
    - Amazon SageMaker AI Assessment AWS Lambda
    - Amazon Bedrock AgentCore Assessment AWS Lambda
+   - OWASP LLM Top 10 Assessment AWS Lambda
    - AWS IAM Permission Caching AWS Lambda
    - Consolidated Report Generation AWS Lambda
 4. **Assessment Execution**: AWS Step Functions orchestrate parallel AWS Lambda execution
@@ -357,6 +359,7 @@ You can check the AWS CodeBuild console to confirm the assessment completed succ
   - `bedrock_security_report_{execution_id}.csv` - Amazon Bedrock security assessment results
   - `sagemaker_security_report_{execution_id}.csv` - Amazon SageMaker AI security assessment results
   - `agentcore_security_report_{execution_id}.csv` - Amazon Bedrock AgentCore security assessment results
+  - `owasp_security_report_{execution_id}.csv` - OWASP LLM Top 10 security assessment results
   - `permissions_cache_{execution_id}.json` - IAM permissions cache
   - `security_assessment_{timestamp}_{execution_id}.html` - Consolidated HTML report (same features as multi-account report)
 
@@ -498,7 +501,7 @@ For a clean removal, delete resources in this order:
 
 | Document | Description |
 |----------|-------------|
-| [Security Checks Reference](docs/SECURITY_CHECKS.md) | Complete reference for all 52 security checks with severity levels |
+| [Security Checks Reference](docs/SECURITY_CHECKS.md) | Complete reference for all 69 security checks with severity levels and OWASP mappings |
 | [Troubleshooting Guide](docs/TROUBLESHOOTING.md) | Common issues, debugging tips, and FAQ |
 | [Developer Guide](docs/DEVELOPER_GUIDE.md) | Architecture details, adding custom checks, and contributing |
 

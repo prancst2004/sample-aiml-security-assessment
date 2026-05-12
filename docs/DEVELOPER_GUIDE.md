@@ -18,6 +18,11 @@
   - [1. Security Check Implementation](#1-security-check-implementation)
   - [2. Performance Optimization](#2-performance-optimization)
   - [3. Error Handling](#3-error-handling)
+- [OWASP LLM Top 10 Extensions](#owasp-llm-top-10-extensions)
+  - [Architecture](#owasp-architecture)
+  - [Adding a New OWASP Check](#adding-a-new-owasp-check)
+  - [Compliance Mappings](#compliance-mappings)
+  - [Adding a New Framework Mapping](#adding-a-new-framework-mapping)
 - [Testing Your Extensions](#testing-your-extensions)
   - [1. Local Testing](#1-local-testing)
   - [2. Integration Testing](#2-integration-testing)
@@ -490,7 +495,11 @@ For detailed troubleshooting guidance, common issues, and debugging tips, see th
 ## Development Roadmap
 
 ### Current Status
-- **AI/ML Assessment**: 52 security checks across three services (see [Security Checks Reference](SECURITY_CHECKS.md))
+- **AI/ML Assessment**: 69 security checks across three services plus OWASP LLM Top 10 extensions (see [Security Checks Reference](SECURITY_CHECKS.md))
+  - 25 Amazon SageMaker AI checks
+  - 13 Amazon Bedrock checks
+  - 13 Amazon Bedrock AgentCore checks
+  - 18 OWASP LLM Top 10 extensions (OW-01 through OW-18)
 
 ### Potential Additions
 - **Amazon Comprehend**: Data privacy, access controls, entity recognition security
@@ -504,7 +513,121 @@ For detailed troubleshooting guidance, common issues, and debugging tips, see th
 - Results are consolidated into a single HTML/CSV report
 - AWS CodeBuild orchestrates deployment and execution across multiple accounts
 
-## Report Generation Architecture
+## OWASP LLM Top 10 Extensions
+
+The framework includes 18 checks mapped to the [OWASP Top 10 for LLM Applications (2025)](https://genai.owasp.org/llm-top-10/). These checks extend the per-service Lambdas and a dedicated `owasp_assessments/` Lambda. Findings carry compliance-framework mappings in a `Compliance_Mappings` field, which drives the Compliance Dashboard and OWASP detail table in the HTML report.
+
+### OWASP Architecture
+
+Two delivery paths coexist:
+
+1. **In-line extensions** inside existing per-service Lambdas
+   - `bedrock_assessments/owasp_extensions.py` — OW-01, OW-03, OW-08, OW-11, OW-14, OW-15 (proactive leg)
+   - `agentcore_assessments/owasp_extensions.py` — OW-16
+   These ride on top of existing `list_*` calls (e.g., BR-05 guardrail loop) and emit findings under new `OW-XX` Check_IDs without duplicating API traffic.
+
+2. **Dedicated Lambda** `functions/security/owasp_assessments/`
+   - `app.py` — handler mirroring the AgentCore Lambda pattern, emits `owasp_security_report_{execution_id}.csv`.
+   - `schema.py` — same `Finding` / `create_finding` shape as the other modules (duplicated per-module like Bedrock/SageMaker/AgentCore).
+   - `compliance_mappings.py` — `Check_ID → [ComplianceMapping]` table; empty list is safe.
+   - `owasp_checks/` — one file per check, each exposing an `evaluate_*()` function that takes injected boto3 clients.
+
+The OWASP Lambda runs as the fourth parallel branch in `statemachine/assessments.asl.json`, alongside Bedrock, SageMaker, and AgentCore. The consolidator (`generate_consolidated_report/app.py`) lists `owasp_security_report_*` objects alongside the other three prefixes and rolls them into a single HTML report.
+
+### Adding a New OWASP Check
+
+To add, for example, `OW-19` under `owasp_assessments/`:
+
+1. Create `owasp_checks/llm0X_your_check.py` with:
+   ```python
+   from typing import Any, Dict, List
+   try:
+       from ..schema import create_finding, SeverityEnum, StatusEnum
+   except ImportError:  # pragma: no cover
+       from schema import create_finding, SeverityEnum, StatusEnum  # type: ignore
+
+   def evaluate_your_check(client: Any) -> List[Dict[str, Any]]:
+       # ... run API calls, emit findings ...
+       return [create_finding(
+           check_id="OW-19",
+           finding_name="...",
+           finding_details="...",
+           resolution="...",
+           reference="https://docs.aws.amazon.com/...",
+           severity=SeverityEnum.MEDIUM,
+           status=StatusEnum.FAILED,
+       )]
+   ```
+
+2. Wire it into `app.py`:
+   ```python
+   from owasp_checks.llm0X_your_check import evaluate_your_check
+   # ...
+   all_findings.extend(_safe(
+       "OW-19", "Your Check Name",
+       evaluate_your_check,
+       your_client,
+   ))
+   ```
+
+3. Add the OW-19 mapping to `compliance_mappings.py`:
+   ```python
+   "OW-19": [
+       {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+        "control_id": "LLM0X", "coverage_type": "full"},
+   ],
+   ```
+
+4. Add the OW-19 entry to `bedrock_assessments/compliance_mappings.py`, `sagemaker_assessments/compliance_mappings.py`, and `agentcore_assessments/compliance_mappings.py` if the check ever emits from those modules; otherwise skip.
+
+5. Add a unit test class in `test_owasp_checks.py` or `test_owasp_checks_phase2b2.py` that exercises the pass / fail / N/A / access-denied branches with `unittest.mock.MagicMock`.
+
+6. Add any new IAM permissions to:
+   - `aiml-security-assessment/template.yaml` (OwaspSecurityAssessmentFunction policies)
+   - `aiml-security-assessment/template-multi-account.yaml`
+   - `deployment/1-aiml-security-member-roles.yaml`
+   - `deployment/aiml-security-single-account.yaml`
+
+7. Add the SECURITY_CHECKS.md entry under "OWASP LLM Top 10 Extensions".
+
+### Compliance Mappings
+
+Every finding can carry a list of `ComplianceMapping` dicts. The shape is:
+
+```python
+{
+    "framework": "OWASP-LLM",          # OWASP-LLM | NIST-AI-RMF | MITRE-ATLAS | HIPAA | FSI
+    "framework_version": "2025",
+    "control_id": "LLM01",             # framework-specific
+    "coverage_type": "full"            # full | compensating | partial-app-layer
+}
+```
+
+The mapping is resolved automatically inside `create_finding()` via the per-module `compliance_mappings.CHECK_TO_COMPLIANCE_MAPPINGS` table. Callers can also pass an explicit `compliance_mappings=[...]` list to `create_finding()` to override.
+
+Three coverage types distinguish honest scope:
+
+- **`full`** — AWS control plane fully assesses this control.
+- **`compensating`** — AWS provides a partial compensating control; the primary control sits at the application layer (e.g., OWASP LLM05 Improper Output Handling).
+- **`partial-app-layer`** — The control has application-layer dimensions outside AWS control plane scope (e.g., OWASP LLM03 Supply Chain).
+
+The Compliance Dashboard's OWASP row caps status at "Partial" when any mapping for that LLM-XX is `compensating` or `partial-app-layer`, so LLM03 and LLM05 never show green regardless of individual check results.
+
+### Adding a New Framework Mapping
+
+To introduce a new framework (e.g., NIST AI RMF 1.0):
+
+1. Extend the `Framework` literal in `compliance_mappings.py` (all four copies — one per Lambda module, plus the consolidator's schema if applicable).
+2. Append entries to `CHECK_TO_COMPLIANCE_MAPPINGS` tagging each relevant Check_ID with the new framework + control_id.
+3. Update `generate_consolidated_report/compliance_aggregator.py`:
+   - Add the framework name to `FRAMEWORK_PLACEHOLDERS` or move it to a fully-implemented `FRAMEWORK_CATALOGS` entry.
+   - Add an `aggregate_<framework>_coverage()` function if per-control aggregation is desired.
+4. Update `report_template.py` to render the new framework card in the Compliance Dashboard and add a detail section similar to `#owasp`.
+5. Add unit tests for the new aggregator.
+
+---
+
+
 
 ### Shared Template Module
 
