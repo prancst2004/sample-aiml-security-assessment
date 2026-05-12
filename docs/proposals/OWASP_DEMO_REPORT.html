@@ -186,6 +186,18 @@
         .card-body .table-intro:first-child { margin-top: -20px; }
         .table-intro strong { color: var(--text); font-weight: 600; }
         .table-intro code { font-size: 11px; }
+        /* Check chips (merged OWASP table) */
+        .mapping-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .check-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 99px; font-size: 12px; color: var(--text); text-decoration: none; line-height: 1.2; transition: all 0.15s; }
+        .check-chip:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+        .check-chip code { padding: 1px 6px; font-size: 10.5px; background: var(--surface-2); font-weight: 600; }
+        .check-chip.new code { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 2px; }
+        .check-chip.new { border-color: var(--accent); }
+        .sev-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .sev-dot.high { background: var(--danger); }
+        .sev-dot.medium { background: var(--warning); }
+        .sev-dot.low { background: var(--accent); }
+        .sev-dot.info { background: var(--text-3); }
     </style>
 </head>
 <body>
@@ -212,16 +224,6 @@
             <a href="#compliance-dashboard" class="nav-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                 Compliance Dashboard
-            </a>
-            <a href="#owasp" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1"/></svg>
-                OWASP Top 10 LLM
-                <span class="count">10</span>
-            </a>
-            <a href="#new-checks" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                New OWASP Checks
-                <span class="count">18</span>
             </a>
             <a href="#findings-preview" class="nav-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -258,16 +260,11 @@
                 AgentCore
                 <span class="count">13</span>
             </a>
-            <a href="#owasp" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                OWASP
-                <span class="count">18</span>
-            </a>
         </nav>
 
         <nav class="nav-section">
             <h3>Compliance Frameworks</h3>
-            <a href="#compliance-dashboard" class="nav-item">
+            <a href="#owasp" class="nav-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1"/></svg>
                 OWASP Top 10 LLM
                 <span class="count">10</span>
@@ -309,14 +306,13 @@
         <div class="reading-guide">
             <h3>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                How to Read This Report (7 sections, ~5 min)
+                How to Read This Report (6 sections, ~4 min)
             </h3>
-            <p>The report is organised into seven sections (sidebar on the left). Each section answers one question; together they make the case that Phase 1–3 is ready to merge.</p>
+            <p>The report is organised into six sections (sidebar on the left). Each section answers one question; together they make the case that Phase 1–3 is ready to merge.</p>
             <ol>
                 <li><strong>Overview</strong>Headline metrics + what's about to fail most loudly in an example run. Start here for scale.<span class="hint">5 metric cards + priority alerts + legend</span></li>
                 <li><strong>Compliance Dashboard</strong>Does this PR move the compliance needle? Four framework cards (OWASP active, NIST / ATLAS / HIPAA planned).<span class="hint">1 grid of 4 cards</span></li>
-                <li><strong>OWASP Top 10 for LLM</strong>Per-category status for LLM01..LLM10. This is the "headline chart" the customer will see.<span class="hint">1 table · 10 rows · links to OWASP</span></li>
-                <li><strong>New OWASP Checks</strong>Full audit trail of all 18 additions (OW-01..OW-18) — name, severity, OWASP mapping, delivery module, coverage type, AWS docs.<span class="hint">1 table · 18 rows · links to AWS docs</span></li>
+                <li><strong>OWASP Top 10 — Category Status + Contributing Checks</strong>Single merged table: one row per LLM category showing its status and every contributing check (existing + 18 new) as clickable chips.<span class="hint">1 merged table · 10 rows</span></li>
                 <li><strong>Findings Preview</strong>What a single finding looks like end-to-end — including the Resolution and Reference fields that drive remediation. Sample rows from the real fixture.<span class="hint">1 explainer + 1 table · 6 sample rows</span></li>
                 <li><strong>Live AWS Evidence</strong>Proof the code works against real AWS. Two side-by-side console snippets from the OWASP Lambda, one from Bedrock, and a state-transition table showing Failed→Passed flips.<span class="hint">2 consoles + 1 console + 1 transitions table</span></li>
                 <li><strong>Testing + What's Pushed</strong>Regression summary (152 tests across 9 modules), seeded-resource teardown ledger, and the 9-commit map of what the PR contains.<span class="hint">3 tables — per-module tests, teardown, commits</span></li>
@@ -412,7 +408,7 @@
                     <a href="#whats-pushed" style="font-size: 12px; color: var(--accent); text-decoration: none;">View full PR summary</a>
                 </div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 1 of 7 — Severity &amp; Compliance Legend.</strong> Shows how to read every other status pill in this report. High = remediate within 7 days; Non-Compliant = at least one mapped check failed; Partial = app-layer scope prevents a full green. Same semantics the real shipped report uses.</div>
+                    <div class="table-intro"><strong>Table 1 of 6 — Severity &amp; Compliance Legend.</strong> Shows how to read every other status pill in this report. High = remediate within 7 days; Non-Compliant = at least one mapped check failed; Partial = app-layer scope prevents a full green. Same semantics the real shipped report uses.</div>
                     <table style="min-width: 100%; table-layout: fixed;">
                         <thead>
                             <tr>
@@ -500,158 +496,168 @@
             </div>
         </section>
 
-        <!-- ==================== OWASP DETAIL ==================== -->
+        <!-- ==================== OWASP TOP 10 + CHECK DETAILS (MERGED) ==================== -->
         <section id="owasp" class="section">
             <div class="section-title">
-                OWASP Top 10 for LLM Applications 2025
-                <span class="count-pill">Per-category status</span>
+                OWASP Top 10 for LLM — Category Status &amp; Contributing Checks
+                <span class="count-pill">10 categories · 18 new checks + 7 reused</span>
             </div>
             <div class="card">
-                <div class="card-header"><h3>Compliance Status by Vulnerability Category</h3></div>
+                <div class="card-header"><h3>Per-Category Compliance Status with All Contributing Checks</h3></div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 2 of 7 — OWASP Top 10 headline chart.</strong> One row per OWASP LLM category (LLM01..LLM10). The <em>Status</em> column is the single number a customer cares about — <span class="status compliant" style="padding: 2px 6px; font-size: 10px;">Compliant</span> all mapped checks passed, <span class="status partial" style="padding: 2px 6px; font-size: 10px;">Partial</span> app-layer dimension so green is never possible (LLM03, LLM05, LLM07), <span class="status non-compliant" style="padding: 2px 6px; font-size: 10px;">Non-Compliant</span> at least one check failed. The Docs column links straight to each OWASP page.</div>
+                    <div class="table-intro"><strong>Merged Table — One place for OWASP status and check details.</strong> Each row is an OWASP LLM category. The <em>Status</em> column is the customer-facing compliance number. The <em>Contributing Checks</em> column lists every check (existing BR-/SM-/AC- plus new OW-XX) that contributes evidence, color-coded by severity, with its check-ID linking straight to the AWS documentation the real check emits in its <code>reference</code> field. New checks added by this PR are underlined.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 7%;">ID</th>
                                     <th style="width: 20%;">Vulnerability</th>
-                                    <th style="width: 38%;">AWS Controls Evaluated</th>
+                                    <th style="width: 52%;">Contributing Checks <span style="font-weight: 400; color: var(--text-3); text-transform: none; letter-spacing: 0;">(existing · <span style="text-decoration: underline;">new in this PR</span>)</span></th>
                                     <th style="width: 13%;">Status</th>
-                                    <th style="width: 14%;">Coverage</th>
-                                    <th style="width: 8%;">Docs</th>
+                                    <th style="width: 8%;">OWASP Docs</th>
                                 </tr>
                             </thead>
                             <tbody>
+
                                 <tr>
                                     <td><code>LLM01</code></td>
                                     <td class="col-domain">Prompt Injection</td>
-                                    <td class="finding-details">BR-05 guardrail presence · OW-01 PROMPT_ATTACK strength · OW-02 KB source trust</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html" target="_blank" title="BR-05 · Guardrails configured"><code>BR-05</code> Guardrails configured <span class="sev-dot info"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-content-filters.html" target="_blank" title="OW-01 · PROMPT_ATTACK filter strength"><code>OW-01</code> PROMPT_ATTACK strength <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-security.html" target="_blank" title="OW-02 · KB source bucket trust"><code>OW-02</code> KB source trust <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status non-compliant">Non-Compliant</span></td>
-                                    <td class="finding-details">full + partial</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/" target="_blank" class="reference-btn" title="OWASP LLM01 Prompt Injection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/" target="_blank" class="reference-btn" title="OWASP LLM01"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM02</code></td>
                                     <td class="col-domain">Sensitive Information Disclosure</td>
-                                    <td class="finding-details">BR-04 logging · BR-09 KB encryption · OW-03 PII redaction · OW-04 log retention · OW-17 KB retrieval policy</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock/latest/userguide/logging-using-cloudtrail.html" target="_blank" title="BR-04 · CloudTrail logging"><code>BR-04</code> CloudTrail logging <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-security.html" target="_blank" title="BR-09 · KB encryption"><code>BR-09</code> KB encryption <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-sensitive-filters.html" target="_blank" title="OW-03 · Guardrail PII redaction"><code>OW-03</code> PII redaction <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html" target="_blank" title="OW-04 · Invocation log retention"><code>OW-04</code> Log retention &amp; access <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" title="OW-17 · KB retrieval access policy"><code>OW-17</code> KB retrieval policy <span class="sev-dot high"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status non-compliant">Non-Compliant</span></td>
-                                    <td class="finding-details">full</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/" target="_blank" class="reference-btn" title="OWASP LLM02 Sensitive Information Disclosure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/" target="_blank" class="reference-btn" title="OWASP LLM02"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM03</code></td>
                                     <td class="col-domain">Supply Chain</td>
-                                    <td class="finding-details">AC-05 ECR encryption · OW-05 model provenance · OW-06 JumpStart/Marketplace · OW-16 image scan</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/encryption-at-rest.html" target="_blank" title="AC-05 · ECR encryption"><code>AC-05</code> ECR encryption <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html" target="_blank" title="OW-05 · Model provenance"><code>OW-05</code> Model provenance <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/sagemaker/latest/dg/jumpstart.html" target="_blank" title="OW-06 · JumpStart / Marketplace"><code>OW-06</code> JumpStart / Marketplace <span class="sev-dot low"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html" target="_blank" title="OW-16 · ECR image scan on push"><code>OW-16</code> ECR image scan <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status partial">Partial</span></td>
-                                    <td class="finding-details">partial-app-layer</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm032025-supply-chain/" target="_blank" class="reference-btn" title="OWASP LLM03 Supply Chain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm032025-supply-chain/" target="_blank" class="reference-btn" title="OWASP LLM03"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM04</code></td>
                                     <td class="col-domain">Data and Model Poisoning</td>
-                                    <td class="finding-details">SM-05 MLOps · SM-07 Model Monitor · OW-07 KB ingestion role scope</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html" target="_blank" title="SM-07 · Model Monitor"><code>SM-07</code> Model Monitor <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" title="OW-07 · KB ingestion role scope"><code>OW-07</code> KB ingestion role scope <span class="sev-dot high"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status compliant">Compliant</span></td>
-                                    <td class="finding-details">partial-app-layer</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/" target="_blank" class="reference-btn" title="OWASP LLM04 Data and Model Poisoning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm042025-data-and-model-poisoning/" target="_blank" class="reference-btn" title="OWASP LLM04"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM05</code></td>
                                     <td class="col-domain">Improper Output Handling</td>
-                                    <td class="finding-details">OW-08 guardrail output filter (compensating only — primary control is at the application layer)</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-word-filters.html" target="_blank" title="OW-08 · Guardrail output filter (compensating)"><code>OW-08</code> Output filter (compensating) <span class="sev-dot medium"></span></a>
+                                        </div>
+                                        <div class="finding-details" style="margin-top: 6px;">Primary control is at the application layer (sanitising LLM output before eval / SQL / shell / HTML). AWS control plane provides a compensating signal only.</div>
+                                    </td>
                                     <td><span class="status partial">Partial</span></td>
-                                    <td class="finding-details">compensating</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/" target="_blank" class="reference-btn" title="OWASP LLM05 Improper Output Handling"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/" target="_blank" class="reference-btn" title="OWASP LLM05"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM06</code></td>
                                     <td class="col-domain">Excessive Agency</td>
-                                    <td class="finding-details">BR-01/08/10 IAM · AC-02 IAM Full Access · OW-09 action-group wildcards · OW-10 HITL · OW-18 sub-agents</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples.html" target="_blank" title="BR-01 · Bedrock IAM"><code>BR-01</code> Bedrock IAM <span class="sev-dot high"></span></a>
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/security_iam.html" target="_blank" title="AC-02 · AgentCore IAM Full Access"><code>AC-02</code> AgentCore IAM <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html" target="_blank" title="OW-09 · Action-group wildcard scope"><code>OW-09</code> Action-group wildcards <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-action-groups.html" target="_blank" title="OW-10 · Human-in-the-loop confirmation"><code>OW-10</code> HITL confirmation <span class="sev-dot info"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent.html" target="_blank" title="OW-18 · Multi-agent sub-agent inventory"><code>OW-18</code> Sub-agent inventory <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status non-compliant">Non-Compliant</span></td>
-                                    <td class="finding-details">full + partial</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm062025-excessive-agency/" target="_blank" class="reference-btn" title="OWASP LLM06 Excessive Agency"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm062025-excessive-agency/" target="_blank" class="reference-btn" title="OWASP LLM06"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM07</code></td>
                                     <td class="col-domain">System Prompt Leakage</td>
-                                    <td class="finding-details">BR-07 prompt management · OW-11 managed prompts</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html" target="_blank" title="BR-07 · Prompt Management"><code>BR-07</code> Prompt Management <span class="sev-dot low"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html" target="_blank" title="OW-11 · System prompt protection"><code>OW-11</code> System prompt protection <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status partial">Partial</span></td>
-                                    <td class="finding-details">partial-app-layer</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/" target="_blank" class="reference-btn" title="OWASP LLM07 System Prompt Leakage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/" target="_blank" class="reference-btn" title="OWASP LLM07"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM08</code></td>
                                     <td class="col-domain">Vector and Embedding Weaknesses</td>
-                                    <td class="finding-details">BR-09 KB encryption · OW-12 vector store network · OW-13 multi-tenant KB</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-security.html" target="_blank" title="BR-09 · KB encryption"><code>BR-09</code> KB encryption <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html" target="_blank" title="OW-12 · Vector store network isolation"><code>OW-12</code> Vector store network <span class="sev-dot high"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multi-tenant.html" target="_blank" title="OW-13 · Multi-tenant KB isolation"><code>OW-13</code> Multi-tenant KB <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status compliant">Compliant</span></td>
-                                    <td class="finding-details">full</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/" target="_blank" class="reference-btn" title="OWASP LLM08 Vector and Embedding Weaknesses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/" target="_blank" class="reference-btn" title="OWASP LLM08"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM09</code></td>
                                     <td class="col-domain">Misinformation</td>
-                                    <td class="finding-details">OW-14 contextual grounding · SM-07 Model Monitor</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip existing" href="https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html" target="_blank" title="SM-07 · Model Monitor"><code>SM-07</code> Model Monitor <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-contextual-grounding-check.html" target="_blank" title="OW-14 · Contextual grounding guardrail"><code>OW-14</code> Contextual grounding <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status compliant">Compliant</span></td>
-                                    <td class="finding-details">full</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm092025-misinformation/" target="_blank" class="reference-btn" title="OWASP LLM09 Misinformation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm092025-misinformation/" target="_blank" class="reference-btn" title="OWASP LLM09"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
+
                                 <tr>
                                     <td><code>LLM10</code></td>
                                     <td class="col-domain">Unbounded Consumption</td>
-                                    <td class="finding-details">OW-15 proactive (guardrail wordPolicy) + OW-15 detective (CloudWatch alarms / Budgets)</td>
+                                    <td>
+                                        <div class="mapping-tags">
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-word-filters.html" target="_blank" title="OW-15 proactive · Guardrail wordPolicy"><code>OW-15</code> Proactive input limits <span class="sev-dot medium"></span></a>
+                                            <a class="check-chip new" href="https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-cw.html" target="_blank" title="OW-15 detective · CloudWatch alarms + Budgets"><code>OW-15b</code> Detective alarms / Budgets <span class="sev-dot medium"></span></a>
+                                        </div>
+                                    </td>
                                     <td><span class="status compliant">Compliant</span></td>
-                                    <td class="finding-details">full</td>
-                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/" target="_blank" class="reference-btn" title="OWASP LLM10 Unbounded Consumption"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+                                    <td class="reference-cell"><a href="https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/" target="_blank" class="reference-btn" title="OWASP LLM10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== NEW CHECKS ==================== -->
-        <section id="new-checks" class="section">
-            <div class="section-title">
-                New OWASP Checks — All 18 Extensions
-                <span class="count-pill">Phase 2a + 2b + 2b.2</span>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3>OW-01 through OW-18</h3></div>
-                <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 3 of 7 — What we're adding (all 18 new checks).</strong> One row per new OW-XX check. Columns: <em>Name</em> · <em>Severity</em> (default finding severity) · <em>OWASP</em> (which LLM-XX category it maps to) · <em>Delivery Module</em> (lives either inside an existing Lambda or in the new <code>owasp_assessments/</code>) · <em>Coverage Type</em> (<code>full</code> / <code>compensating</code> / <code>partial-app-layer</code> — drives how the dashboard caps status). Docs column links to the exact AWS page the check's <code>reference</code> field emits.</div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 7%;">Check</th>
-                                    <th style="width: 27%;">Name</th>
-                                    <th style="width: 9%;">Severity</th>
-                                    <th style="width: 11%;">OWASP</th>
-                                    <th style="width: 16%;">Delivery Module</th>
-                                    <th style="width: 22%;">Coverage Type</th>
-                                    <th style="width: 8%;">AWS Docs</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td><code>OW-01</code></td><td class="col-domain">Guardrail Prompt-Attack Filter Strength</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM01</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-content-filters.html" target="_blank" class="reference-btn" title="Bedrock content filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-02</code></td><td class="col-domain">Knowledge Base Source Trust</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM01/03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-security.html" target="_blank" class="reference-btn" title="KB security — source bucket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-03</code></td><td class="col-domain">Guardrail PII Redaction</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-sensitive-filters.html" target="_blank" class="reference-btn" title="Bedrock sensitive info filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-04</code></td><td class="col-domain">Invocation Log Retention &amp; Access</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html" target="_blank" class="reference-btn" title="Model invocation logging"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-05</code></td><td class="col-domain">Imported/Custom Model Provenance</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html" target="_blank" class="reference-btn" title="Bedrock custom models"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-06</code></td><td class="col-domain">SageMaker JumpStart &amp; Marketplace Inventory</td><td><span class="severity low">Low</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/sagemaker/latest/dg/jumpstart.html" target="_blank" class="reference-btn" title="SageMaker JumpStart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-07</code></td><td class="col-domain">Knowledge Base Ingestion Role Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM04</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" class="reference-btn" title="KB IAM permissions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-08</code></td><td class="col-domain">Guardrail Output Filter</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM05</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">compensating</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-word-filters.html" target="_blank" class="reference-btn" title="Bedrock word/topic filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-09</code></td><td class="col-domain">Agent Action-Group Wildcard Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-permissions.html" target="_blank" class="reference-btn" title="Bedrock Agents IAM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-10</code></td><td class="col-domain">Human-in-the-Loop &amp; Confirmation Flow</td><td><span class="severity na">Info</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-action-groups.html" target="_blank" class="reference-btn" title="Bedrock Agents action groups"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-11</code></td><td class="col-domain">System Prompt Protection</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM07</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html" target="_blank" class="reference-btn" title="Bedrock Prompt Management"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-12</code></td><td class="col-domain">Vector Store Network Isolation</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-network.html" target="_blank" class="reference-btn" title="OpenSearch Serverless networking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-13</code></td><td class="col-domain">Multi-Tenant Knowledge Base Isolation</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (heuristic)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multi-tenant.html" target="_blank" class="reference-btn" title="KB multi-tenant filtering"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-14</code></td><td class="col-domain">Contextual Grounding Guardrail</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM09</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-contextual-grounding-check.html" target="_blank" class="reference-btn" title="Contextual grounding filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-15</code></td><td class="col-domain">Invocation Rate, Token &amp; Cost Controls</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM10</span></td><td class="finding-details">bedrock + owasp_assessments</td><td class="finding-details">partial-app-layer (split)</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-cw.html" target="_blank" class="reference-btn" title="Bedrock CloudWatch monitoring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-16</code></td><td class="col-domain">Container Image Scanning</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">agentcore inline</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html" target="_blank" class="reference-btn" title="ECR image scanning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-17</code></td><td class="col-domain">Knowledge Base Retrieval Access Policy</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html" target="_blank" class="reference-btn" title="KB resource-based policies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
-                                <tr><td><code>OW-18</code></td><td class="col-domain">Multi-Agent Sub-Agent Inventory</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td><td class="reference-cell"><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-multi-agent.html" target="_blank" class="reference-btn" title="Bedrock multi-agent collaboration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -682,7 +688,7 @@
             <div class="card">
                 <div class="card-header"><h3>Sample Findings with <code>Compliance_Mappings</code> + Remediation</h3></div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 4 of 7 — What one finding looks like end-to-end.</strong> These are real rows from the fixture that regenerates <code>sample-reports/security_assessment_single_account.html</code>. Notice each row has: the <em>Finding</em> name + detail, a prescriptive <em>Resolution</em> (naming the specific API or parameter to change), the new <em>Compliance</em> badge, severity/status pills, and a one-click <em>AWS Docs</em> link — exactly the pattern the existing 51 service-level checks already use.</div>
+                    <div class="table-intro"><strong>Table 2 of 6 — What one finding looks like end-to-end.</strong> These are real rows from the fixture that regenerates <code>sample-reports/security_assessment_single_account.html</code>. Notice each row has: the <em>Finding</em> name + detail, a prescriptive <em>Resolution</em> (naming the specific API or parameter to change), the new <em>Compliance</em> badge, severity/status pills, and a one-click <em>AWS Docs</em> link — exactly the pattern the existing 51 service-level checks already use.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -840,7 +846,7 @@
             <div class="card">
                 <div class="card-header"><h3>State Transitions Observed in the Seeded Run</h3></div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 5 of 7 — Proof the checks actually fire correctly.</strong> Each row shows one OWASP check's finding before and after seeding a specific AWS resource. If the checks are wired right, seeding a guardrail with <code>PROMPT_ATTACK output=NONE</code> should flip OW-01 from N/A to Failed; adding a Bedrock-scoped Budget should flip OW-15 detective from Failed to Passed — and they do. This is the most concrete evidence in the report.</div>
+                    <div class="table-intro"><strong>Table 3 of 6 — Proof the checks actually fire correctly.</strong> Each row shows one OWASP check's finding before and after seeding a specific AWS resource. If the checks are wired right, seeding a guardrail with <code>PROMPT_ATTACK output=NONE</code> should flip OW-01 from N/A to Failed; adding a Bedrock-scoped Budget should flip OW-15 detective from Failed to Passed — and they do. This is the most concrete evidence in the report.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -898,7 +904,7 @@
             <div class="card">
                 <div class="card-header"><h3>Per-Module Test Breakdown</h3></div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 6 of 7 — Unit-test regression.</strong> 152 tests across 9 modules all pass. The only FAIL is a pre-existing upstream assertion in <code>test_generate_report.py</code> (<code>service-badge</code> vs <code>service-icon</code>) that was already failing before Phase 1 — not caused by this work.</div>
+                    <div class="table-intro"><strong>Table 4 of 6 — Unit-test regression.</strong> 152 tests across 9 modules all pass. The only FAIL is a pre-existing upstream assertion in <code>test_generate_report.py</code> (<code>service-badge</code> vs <code>service-icon</code>) that was already failing before Phase 1 — not caused by this work.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -928,7 +934,7 @@
             <div class="card">
                 <div class="card-header"><h3>Resources Seeded &amp; Torn Down During Live Validation</h3></div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 7a of 7 — Cleanup ledger.</strong> The five AWS resources we created to exercise the real pass/fail paths, all tagged <code>kiro-owasp-validation=true</code> and deleted after testing. The account is back to its pre-validation baseline — you can verify with <code>aws bedrock list-guardrails</code>.</div>
+                    <div class="table-intro"><strong>Table 5 of 6 — Cleanup ledger.</strong> The five AWS resources we created to exercise the real pass/fail paths, all tagged <code>kiro-owasp-validation=true</code> and deleted after testing. The account is back to its pre-validation baseline — you can verify with <code>aws bedrock list-guardrails</code>.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -960,7 +966,7 @@
             <div class="card">
                 <div class="card-header"><h3>Commits on the Feature Branch</h3></div>
                 <div class="card-body" style="padding: 0;">
-                    <div class="table-intro"><strong>Table 7b of 7 — The PR's commit map.</strong> Nine commits on <code>feature/owasp-llm-phase1a-schema-and-tagging</code>, organised by phase. Each commit is a logical unit — you could review them in order and the branch would build + pass tests at every step.</div>
+                    <div class="table-intro"><strong>Table 6 of 6 — The PR's commit map.</strong> Nine commits on <code>feature/owasp-llm-phase1a-schema-and-tagging</code>, organised by phase. Each commit is a logical unit — you could review them in order and the branch would build + pass tests at every step.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
