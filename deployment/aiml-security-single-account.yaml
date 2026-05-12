@@ -136,6 +136,15 @@ Resources:
                   - bedrock-agent:GetKnowledgeBase
                   - bedrock-agent:ListFlows
                   - bedrock-agent:GetFlow
+                  # Phase 2b OWASP check permissions
+                  - bedrock-agent:ListDataSources
+                  - bedrock-agent:GetDataSource
+                  - bedrock-agent:GetResourcePolicy
+                  - bedrock-agent:ListAgents
+                  - bedrock-agent:GetAgent
+                  - bedrock-agent:ListAgentVersions
+                  - bedrock-agent:ListAgentActionGroups
+                  - bedrock-agent:GetAgentActionGroup
                   # SageMaker Permissions
                   - sagemaker:ListNotebookInstances
                   - sagemaker:DescribeNotebookInstance
@@ -227,6 +236,23 @@ Resources:
                   - s3:GetBucketVersioning
                   - s3:GetBucketTagging
                   - s3:HeadBucket
+                  # Phase 2b OW-02 (KB source trust)
+                  - s3:GetBucketPolicy
+                  - s3:GetBucketPolicyStatus
+                  - s3:GetBucketAcl
+                  - s3:GetBucketPublicAccessBlock
+                  # Phase 2b OW-09 (action-group role inspection)
+                  - lambda:GetFunction
+                  - iam:GetRole
+                  - iam:ListRolePolicies
+                  - iam:GetRolePolicy
+                  - iam:ListAttachedRolePolicies
+                  - iam:GetPolicy
+                  - iam:GetPolicyVersion
+                  # Phase 2b OW-15b (detective consumption controls)
+                  - cloudwatch:DescribeAlarms
+                  - budgets:DescribeBudgets
+                  - budgets:ViewBudget
                 Resource: "*"
 
   # CodeBuild role for running assessments

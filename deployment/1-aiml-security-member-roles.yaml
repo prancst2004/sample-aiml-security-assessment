@@ -76,6 +76,15 @@ Resources:
                   - bedrock-agent:GetKnowledgeBase
                   - bedrock-agent:ListFlows
                   - bedrock-agent:GetFlow
+                  # Phase 2b OWASP check permissions
+                  - bedrock-agent:ListDataSources
+                  - bedrock-agent:GetDataSource
+                  - bedrock-agent:GetResourcePolicy
+                  - bedrock-agent:ListAgents
+                  - bedrock-agent:GetAgent
+                  - bedrock-agent:ListAgentVersions
+                  - bedrock-agent:ListAgentActionGroups
+                  - bedrock-agent:GetAgentActionGroup
                 Resource: "*"
               # Bedrock AgentCore Permissions
               - Effect: Allow
@@ -145,6 +154,8 @@ Resources:
               - Effect: Allow
                 Action:
                   - lambda:ListFunctions
+                  # Phase 2b OW-09 — resolve agent action-group Lambda execution roles
+                  - lambda:GetFunction
                 Resource: "*"
               # ECS Permissions
               - Effect: Allow
@@ -181,6 +192,11 @@ Resources:
                   - s3:GetBucketVersioning
                   - s3:GetBucketTagging
                   - s3:HeadBucket
+                  # Phase 2b OW-02 (KB source trust)
+                  - s3:GetBucketPolicy
+                  - s3:GetBucketPolicyStatus
+                  - s3:GetBucketAcl
+                  - s3:GetBucketPublicAccessBlock
                 Resource: "arn:aws:s3:::*"
               # KMS Permissions
               - Effect: Allow
@@ -218,6 +234,23 @@ Resources:
                 Action:
                   - sts:AssumeRole
                 Resource: "arn:aws:iam::*:role/aiml-security-*"
+              # Phase 2b OWASP — IAM read for agent action-group role inspection (OW-09)
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:ListRolePolicies
+                  - iam:GetRolePolicy
+                  - iam:ListAttachedRolePolicies
+                  - iam:GetPolicy
+                  - iam:GetPolicyVersion
+                Resource: "*"
+              # Phase 2b OWASP OW-15b — detective consumption controls
+              - Effect: Allow
+                Action:
+                  - cloudwatch:DescribeAlarms
+                  - budgets:DescribeBudgets
+                  - budgets:ViewBudget
+                Resource: "*"
               # SAM/CloudFormation deployment permissions (required for multi-account flow)
               - Effect: Allow
                 Action:

@@ -16,6 +16,7 @@ Resources:
         BedrockSecurityAssessmentFunction: !GetAtt BedrockSecurityAssessmentFunction.Arn
         SagemakerSecurityAssessmentFunction: !GetAtt SagemakerSecurityAssessmentFunction.Arn
         AgentCoreSecurityAssessmentFunction: !GetAtt AgentCoreSecurityAssessmentFunction.Arn
+        OwaspSecurityAssessmentFunction: !GetAtt OwaspSecurityAssessmentFunction.Arn
         GenerateConsolidatedReportFunction: !GetAtt GenerateConsolidatedReportFunction.Arn
         AIMLAssessmentBucketName: !Ref AIMLAssessmentBucket
       Policies:
@@ -29,6 +30,8 @@ Resources:
             FunctionName: !Ref SagemakerSecurityAssessmentFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref AgentCoreSecurityAssessmentFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref OwaspSecurityAssessmentFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref GenerateConsolidatedReportFunction
         - S3CrudPolicy:
@@ -380,6 +383,74 @@ Resources:
               Action:
                 - cloudwatch:ListMetrics
                 - cloudwatch:PutMetricData
+              Resource: '*'
+
+  OwaspSecurityAssessmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'aiml-security-OwaspAssessment'
+      CodeUri: functions/security/owasp_assessments/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Timeout: 600
+      MemorySize: 1024
+      Environment:
+        Variables:
+          AIML_ASSESSMENT_BUCKET_NAME: !Ref AIMLAssessmentBucket
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref AIMLAssessmentBucket
+        - Statement:
+            - Sid: BedrockReadPermissions
+              Effect: Allow
+              Action:
+                - bedrock:ListGuardrails
+                - bedrock:GetGuardrail
+                - bedrock-agent:ListKnowledgeBases
+                - bedrock-agent:GetKnowledgeBase
+                - bedrock-agent:ListDataSources
+                - bedrock-agent:GetDataSource
+                - bedrock-agent:GetResourcePolicy
+                - bedrock-agent:ListAgents
+                - bedrock-agent:GetAgent
+                - bedrock-agent:ListAgentVersions
+                - bedrock-agent:ListAgentActionGroups
+                - bedrock-agent:GetAgentActionGroup
+              Resource: '*'
+            - Sid: IAMReadForAgentRoles
+              Effect: Allow
+              Action:
+                - iam:GetRole
+                - iam:ListRolePolicies
+                - iam:GetRolePolicy
+                - iam:ListAttachedRolePolicies
+                - iam:GetPolicy
+                - iam:GetPolicyVersion
+                - sts:GetCallerIdentity
+              Resource: '*'
+            - Sid: LambdaReadForAgentExecutors
+              Effect: Allow
+              Action:
+                - lambda:GetFunction
+              Resource: '*'
+            - Sid: S3ReadForKBSources
+              Effect: Allow
+              Action:
+                - s3:GetBucketPolicy
+                - s3:GetBucketPolicyStatus
+                - s3:GetBucketAcl
+                - s3:GetBucketPublicAccessBlock
+              Resource: 'arn:aws:s3:::*'
+            - Sid: CloudWatchAndBudgetsForOW15b
+              Effect: Allow
+              Action:
+                - cloudwatch:DescribeAlarms
+                - cloudwatch:ListMetrics
+                - cloudwatch:PutMetricData
+                - budgets:DescribeBudgets
+                - budgets:ViewBudget
               Resource: '*'
 
   # S3 bucket (always created for local storage)

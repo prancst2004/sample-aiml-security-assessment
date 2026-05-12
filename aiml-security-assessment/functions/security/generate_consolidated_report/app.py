@@ -82,6 +82,11 @@ def get_assessment_results(execution_id: str, account_id: str = None) -> Dict[st
             Bucket=s3_bucket, Prefix=f"agentcore_security_report_{execution_id}"
         )
 
+        # Also check for OWASP reports (Phase 2b)
+        owasp_response = s3_client.list_objects_v2(
+            Bucket=s3_bucket, Prefix=f"owasp_security_report_{execution_id}"
+        )
+
         # Combine all responses
         all_objects = []
         if "Contents" in response:
@@ -90,6 +95,8 @@ def get_assessment_results(execution_id: str, account_id: str = None) -> Dict[st
             all_objects.extend(sagemaker_response["Contents"])
         if "Contents" in agentcore_response:
             all_objects.extend(agentcore_response["Contents"])
+        if "Contents" in owasp_response:
+            all_objects.extend(owasp_response["Contents"])
         if not all_objects:
             logger.warning(f"No assessment files found for execution {execution_id}")
             return {}
@@ -101,6 +108,7 @@ def get_assessment_results(execution_id: str, account_id: str = None) -> Dict[st
             "bedrock": {},
             "sagemaker": {},
             "agentcore": {},
+            "owasp": {},
         }
 
         # Process each CSV file
@@ -136,6 +144,8 @@ def get_assessment_results(execution_id: str, account_id: str = None) -> Dict[st
                     category = "sagemaker"
                 elif "agentcore" in s3_key.lower():
                     category = "agentcore"
+                elif "owasp" in s3_key.lower():
+                    category = "owasp"
                 else:
                     logger.warning(f"Unknown assessment type for file: {s3_key}")
                     continue
@@ -156,10 +166,11 @@ def get_assessment_results(execution_id: str, account_id: str = None) -> Dict[st
         assessment_results["summary"] = {
             "total_files_processed": len(assessment_results["bedrock"])
             + len(assessment_results["sagemaker"])
-            + len(assessment_results["agentcore"]),
+            + len(assessment_results["agentcore"])
+            + len(assessment_results["owasp"]),
             "categories_found": [
                 cat
-                for cat in ["bedrock", "sagemaker", "agentcore"]
+                for cat in ["bedrock", "sagemaker", "agentcore", "owasp"]
                 if assessment_results[cat]
             ],
             "rows": assessment_results["bedrock"],
@@ -167,6 +178,7 @@ def get_assessment_results(execution_id: str, account_id: str = None) -> Dict[st
                 "bedrock": list(assessment_results["bedrock"].keys()),
                 "sagemaker": list(assessment_results["sagemaker"].keys()),
                 "agentcore": list(assessment_results["agentcore"].keys()),
+                "owasp": list(assessment_results["owasp"].keys()),
             },
         }
 
@@ -206,10 +218,11 @@ def generate_html_report(assessment_results: Dict[str, Any]) -> str:
         "bedrock": {"passed": 0, "failed": 0, "na": 0},
         "sagemaker": {"passed": 0, "failed": 0, "na": 0},
         "agentcore": {"passed": 0, "failed": 0, "na": 0},
+        "owasp": {"passed": 0, "failed": 0, "na": 0},
     }
-    service_findings = {"bedrock": [], "sagemaker": [], "agentcore": []}
+    service_findings = {"bedrock": [], "sagemaker": [], "agentcore": [], "owasp": []}
 
-    for service in ["bedrock", "sagemaker", "agentcore"]:
+    for service in ["bedrock", "sagemaker", "agentcore", "owasp"]:
         if service in assessment_results:
             for report_type, findings in assessment_results[service].items():
                 for finding in findings:
