@@ -11,6 +11,10 @@ from botocore.exceptions import ClientError
 import random
 import json
 from schema import create_finding
+from owasp_extensions import (
+    evaluate_guardrail_owasp_checks,
+    evaluate_prompt_management_owasp_checks,
+)
 
 # Configure boto3 with retries
 boto3_config = Config(
@@ -775,6 +779,17 @@ def check_bedrock_guardrails() -> Dict[str, Any]:
         try:
             # List all guardrails
             response = bedrock_client.list_guardrails()
+            # Phase 2a: evaluate OWASP extensions (OW-01/03/08/14/15)
+            # against the same guardrail set.
+            try:
+                owasp_guardrail_findings = evaluate_guardrail_owasp_checks(
+                    bedrock_client, response.get("guardrails", [])
+                )
+                findings["csv_data"].extend(owasp_guardrail_findings)
+            except Exception as e:  # noqa: BLE001
+                logger.warning(
+                    "OWASP guardrail extension checks failed: %s", e
+                )
 
             if response.get("guardrails", []):
                 guardrail_names = [
@@ -1113,6 +1128,18 @@ def check_bedrock_prompt_management() -> Dict[str, Any]:
             # List all prompts
             response = bedrock_client.list_prompts()
             prompts = response.get("promptSummaries", [])
+            # Phase 2a: evaluate OW-11 (System Prompt Protection) on the
+            # same prompt list.
+            try:
+                findings["csv_data"].extend(
+                    evaluate_prompt_management_owasp_checks(
+                        bedrock_client, prompts
+                    )
+                )
+            except Exception as e:  # noqa: BLE001
+                logger.warning(
+                    "OWASP prompt-management extension check failed: %s", e
+                )
 
             if prompts:
                 # Count prompts by status

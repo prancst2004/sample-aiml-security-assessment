@@ -301,6 +301,36 @@ CHECK_TO_COMPLIANCE_MAPPINGS: Dict[str, List[ComplianceMapping]] = {
         {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
          "control_id": "LLM06", "coverage_type": "full"},
     ],
+
+    # ---- Phase 2a: OW-XX extension checks ----
+    "OW-01": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM01", "coverage_type": "full"},
+    ],
+    "OW-03": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM02", "coverage_type": "full"},
+    ],
+    "OW-08": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM05", "coverage_type": "compensating"},
+    ],
+    "OW-11": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM07", "coverage_type": "partial-app-layer"},
+    ],
+    "OW-14": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM09", "coverage_type": "full"},
+    ],
+    "OW-15": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM10", "coverage_type": "partial-app-layer"},
+    ],
+    "OW-16": [
+        {"framework": "OWASP-LLM", "framework_version": OWASP_LLM_VERSION,
+         "control_id": "LLM03", "coverage_type": "partial-app-layer"},
+    ],
 }
 
 

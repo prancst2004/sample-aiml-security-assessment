@@ -18,6 +18,7 @@ from botocore.config import Config
 from botocore.exceptions import ClientError
 
 from schema import create_finding, SeverityEnum, StatusEnum
+from owasp_extensions import evaluate_ecr_scan_on_push
 
 # Configure logging
 logger = logging.getLogger()
@@ -1200,6 +1201,13 @@ def check_agentcore_encryption() -> List[Dict[str, Any]]:
                 status=StatusEnum.FAILED,
             )
         )
+
+    # Phase 2a: OW-16 ECR scan-on-push extension.
+    try:
+        _ow16_repos = locals().get("agentcore_repos", [])
+        findings.extend(evaluate_ecr_scan_on_push(_ow16_repos))
+    except Exception as e:  # noqa: BLE001
+        logger.warning("OWASP ECR-scanning extension failed: %s", e)
 
     return findings
 
