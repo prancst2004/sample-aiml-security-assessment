@@ -1,462 +1,702 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI/ML Security Assessment — OWASP LLM Top 10 Coverage · Demo for Review</title>
-<style>
-  /* --- Color tokens (mirrored from the prototype) --- */
-  :root {
-    --bg: #f8fafc;
-    --surface: #ffffff;
-    --surface-2: #f1f5f9;
-    --text: #0f172a;
-    --text-2: #475569;
-    --text-3: #94a3b8;
-    --border: #e2e8f0;
-    --accent: #3b82f6;
-    --accent-soft: #eff6ff;
-    --purple: #8b5cf6;
-    --purple-soft: #f5f3ff;
-    --cyan: #06b6d4;
-    --cyan-soft: #ecfeff;
-    --success: #10b981;
-    --success-soft: #ecfdf5;
-    --warning: #f59e0b;
-    --warning-soft: #fffbeb;
-    --danger: #ef4444;
-    --danger-soft: #fef2f2;
-    --na: #64748b;
-    --na-soft: #f1f5f9;
-  }
-  html[data-theme="dark"] {
-    --bg: #0b1220;
-    --surface: #0f172a;
-    --surface-2: #1e293b;
-    --text: #e2e8f0;
-    --text-2: #94a3b8;
-    --text-3: #64748b;
-    --border: #334155;
-    --accent: #60a5fa;
-    --accent-soft: rgba(96,165,250,0.15);
-    --purple: #a78bfa;
-    --purple-soft: rgba(167,139,250,0.15);
-    --cyan: #22d3ee;
-    --cyan-soft: rgba(34,211,238,0.15);
-    --success: #4ade80;
-    --success-soft: rgba(74,222,128,0.15);
-    --warning: #fbbf24;
-    --warning-soft: rgba(251,191,36,0.15);
-    --danger: #f87171;
-    --danger-soft: rgba(248,113,113,0.15);
-  }
-
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; font-size: 14px; }
-
-  .page { max-width: 1200px; margin: 0 auto; padding: 32px 28px; }
-
-  /* Header */
-  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
-  .header h1 { font-size: 22px; margin: 0 0 6px; font-weight: 700; }
-  .header .subtitle { color: var(--text-2); font-size: 13px; max-width: 720px; }
-  .header .meta { color: var(--text-3); font-size: 12px; margin-top: 8px; }
-  .theme-toggle { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 12px; color: var(--text-2); cursor: pointer; }
-  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Callout banners */
-  .callout { padding: 14px 18px; border-radius: 8px; border-left: 4px solid var(--accent); background: var(--accent-soft); margin-bottom: 24px; font-size: 13px; }
-  .callout strong { color: var(--text); }
-  .callout.demo { border-left-color: var(--warning); background: var(--warning-soft); }
-  .callout.demo strong { color: var(--warning); }
-
-  /* Section titles */
-  .section-title { font-size: 16px; font-weight: 600; color: var(--text); margin: 32px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-  .section-title .count-pill { font-size: 11px; background: var(--surface-2); color: var(--text-2); padding: 2px 8px; border-radius: 99px; font-weight: 500; }
-
-  h3 { font-size: 14px; margin: 0 0 8px; font-weight: 600; }
-  h4 { font-size: 13px; margin: 0 0 6px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
-
-  /* Metric cards */
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
-  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
-  .metric-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .metric-value { font-size: 24px; font-weight: 700; color: var(--text); }
-  .metric-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
-  .metric.danger .metric-value { color: var(--danger); }
-  .metric.warning .metric-value { color: var(--warning); }
-  .metric.success .metric-value { color: var(--success); }
-  .metric.accent .metric-value { color: var(--accent); }
-
-  /* Cards */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
-  .card-header { padding: 12px 18px; border-bottom: 1px solid var(--border); background: var(--surface-2); display: flex; justify-content: space-between; align-items: center; }
-  .card-body { padding: 16px 18px; }
-
-  /* Tables */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; font-weight: 600; color: var(--text-2); padding: 10px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-  td { padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--text); }
-
-  /* Status / severity pills */
-  .pill { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .pill.compliant { background: var(--success-soft); color: var(--success); }
-  .pill.partial { background: var(--warning-soft); color: var(--warning); }
-  .pill.non-compliant { background: var(--danger-soft); color: var(--danger); }
-  .pill.not-assessed { background: var(--na-soft); color: var(--na); }
-  .pill.failed { background: var(--danger-soft); color: var(--danger); }
-  .pill.passed { background: var(--success-soft); color: var(--success); }
-  .pill.na { background: var(--na-soft); color: var(--na); }
-  .pill.high { background: var(--danger-soft); color: var(--danger); }
-  .pill.medium { background: var(--warning-soft); color: var(--warning); }
-  .pill.low { background: var(--success-soft); color: var(--success); }
-  .pill.info { background: var(--na-soft); color: var(--na); }
-
-  /* Compliance cards */
-  .compliance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 16px; }
-  .compliance-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
-  .compliance-card h4 { font-size: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; text-transform: none; letter-spacing: 0; color: var(--text); font-weight: 600; }
-  .compliance-card .rate { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-  .compliance-card .rate.pass { color: var(--success); }
-  .compliance-card .rate.warn { color: var(--warning); }
-  .compliance-card .rate.fail { color: var(--danger); }
-  .compliance-card .rate.planned { color: var(--na); font-size: 16px; font-weight: 600; }
-  .compliance-card .breakdown { font-size: 11px; color: var(--text-2); line-height: 1.5; }
-  .compliance-card.planned { background: var(--surface-2); }
-
-  .framework-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
-  .framework-badge.owasp { background: var(--danger-soft); color: var(--danger); }
-  .framework-badge.nist { background: var(--accent-soft); color: var(--accent); }
-  .framework-badge.atlas { background: var(--purple-soft); color: var(--purple); }
-  .framework-badge.hipaa { background: var(--cyan-soft); color: var(--cyan); }
-
-  .note { background: var(--surface-2); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 4px; font-size: 12px; color: var(--text-2); margin-bottom: 16px; line-height: 1.6; }
-
-  /* Findings detail */
-  .fd-name { font-weight: 600; color: var(--text); }
-  .fd-detail { font-size: 12px; color: var(--text-2); margin-top: 4px; }
-  .fd-mappings { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
-
-  /* Live validation card */
-  .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-  @media (max-width: 900px) { .evidence-grid { grid-template-columns: 1fr; } }
-  .evidence-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; }
-  .evidence-card h4 { margin-bottom: 8px; }
-  .evidence-card .console { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); border-radius: 4px; padding: 12px 14px; font-size: 11.5px; color: var(--text); line-height: 1.5; white-space: pre; overflow-x: auto; }
-  .evidence-card .console .pass { color: var(--success); }
-  .evidence-card .console .fail { color: var(--danger); }
-  .evidence-card .console .na { color: var(--na); }
-  .evidence-card .console .cmt { color: var(--text-3); }
-
-  .transition-table td:first-child code { background: var(--accent-soft); color: var(--accent); }
-
-  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-3); text-align: center; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML Security & Compliance — OWASP LLM Top 10 Coverage · Demo for Review</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #fff;
+            --surface-2: #f1f5f9;
+            --border: #cbd5e1;
+            --text: #0f172a;
+            --text-2: #64748b;
+            --text-3: #94a3b8;
+            --accent: #6366f1;
+            --accent-soft: #eef2ff;
+            --success: #10b981;
+            --success-soft: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-soft: #fffbeb;
+            --danger: #ef4444;
+            --danger-soft: #fef2f2;
+            --purple: #8b5cf6;
+            --purple-soft: #f5f3ff;
+            --cyan: #06b6d4;
+            --cyan-soft: #ecfeff;
+        }
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-2: #334155;
+            --border: #64748b;
+            --text: #f1f5f9;
+            --text-2: #94a3b8;
+            --text-3: #64748b;
+            --accent: #818cf8;
+            --accent-soft: rgba(129, 140, 248, 0.15);
+            --success: #4ade80;
+            --success-soft: rgba(74, 222, 128, 0.15);
+            --warning: #fbbf24;
+            --warning-soft: rgba(251, 191, 36, 0.15);
+            --danger: #f87171;
+            --danger-soft: rgba(248, 113, 113, 0.15);
+            --purple: #a78bfa;
+            --purple-soft: rgba(167, 139, 250, 0.15);
+            --cyan: #22d3ee;
+            --cyan-soft: rgba(34, 211, 238, 0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.6; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
+        .layout { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+        .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+        .sidebar-header h1 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .sidebar-header p { font-size: 12px; color: var(--text-3); }
+        .theme-toggle { display: flex; align-items: center; gap: 8px; margin: 16px 20px; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text); transition: all 0.15s; }
+        .theme-toggle:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .theme-toggle svg { width: 18px; height: 18px; }
+        .theme-toggle .sun-icon { display: none; }
+        .theme-toggle .moon-icon { display: block; }
+        [data-theme="dark"] .theme-toggle .sun-icon { display: block; }
+        [data-theme="dark"] .theme-toggle .moon-icon { display: none; }
+        .nav-section { padding: 0 16px; margin-bottom: 20px; }
+        .nav-section h3 { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 8px; margin-bottom: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--text-2); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+        .nav-item:hover { background: var(--surface-2); color: var(--text); }
+        .nav-item.active { background: var(--accent-soft); color: var(--accent); }
+        .nav-item svg { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+        .nav-item .count { margin-left: auto; font-size: 12px; font-weight: 600; background: var(--surface-2); padding: 2px 8px; border-radius: 10px; }
+        .nav-item.active .count { background: var(--accent); color: #fff; }
+        .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-3); }
+        .sidebar-footer a { color: var(--accent); text-decoration: none; }
+        .main { padding: 32px 40px; max-width: 1400px; }
+        .page-header { margin-bottom: 32px; }
+        .page-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .page-header-meta { display: flex; gap: 24px; font-size: 13px; color: var(--text-2); flex-wrap: wrap; }
+        .page-header-meta span { display: flex; align-items: center; gap: 6px; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .metric { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .metric-label { font-size: 13px; color: var(--text-2); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .metric-value { font-size: 28px; font-weight: 700; color: var(--text); }
+        .metric-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+        .metric.highlight { background: linear-gradient(135deg, var(--success-soft) 0%, rgba(16, 185, 129, 0.2) 100%); border-color: var(--success); }
+        .metric.highlight .metric-value { color: var(--success); }
+        .metric.danger .metric-value { color: var(--danger); }
+        .metric.warning .metric-value { color: var(--warning); }
+        .metric.purple { border-color: var(--purple); }
+        .metric.purple .metric-value { color: var(--purple); }
+        .metric.accent { border-color: var(--accent); }
+        .metric.accent .metric-value { color: var(--accent); }
+        .card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .card-header { padding: 16px 20px; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface-2); }
+        .card-header h3 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .card-body { padding: 20px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 14px 16px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text); background: var(--surface-2); border-bottom: 3px solid var(--accent); white-space: nowrap; }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; word-wrap: break-word; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--surface-2); }
+        .col-domain { font-weight: 500; color: var(--text); }
+        .status { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+        .status.compliant { background: var(--success-soft); color: var(--success); }
+        .status.non-compliant { background: var(--danger-soft); color: var(--danger); }
+        .status.partial { background: var(--warning-soft); color: var(--warning); }
+        .status.na { background: var(--surface-2); color: var(--text-3); }
+        .status.passed { background: var(--success-soft); color: var(--success); }
+        .status.failed { background: var(--danger-soft); color: var(--danger); }
+        .status.planned { background: var(--surface-2); color: var(--text-3); }
+        .severity { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .severity.high { background: var(--danger-soft); color: var(--danger); }
+        .severity.medium { background: var(--warning-soft); color: var(--warning); }
+        .severity.low { background: var(--accent-soft); color: var(--accent); }
+        .severity.na { background: var(--surface-2); color: var(--text-3); }
+        .framework-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-right: 4px; margin-bottom: 4px; }
+        .framework-badge.owasp { background: var(--danger-soft); color: var(--danger); }
+        .framework-badge.nist { background: var(--accent-soft); color: var(--accent); }
+        .framework-badge.atlas { background: var(--purple-soft); color: var(--purple); }
+        .framework-badge.hipaa { background: var(--cyan-soft); color: var(--cyan); }
+        .section { scroll-margin-top: 20px; margin-bottom: 40px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; gap: 12px; }
+        .section-title .count-pill { font-size: 11px; background: var(--surface-2); color: var(--text-2); padding: 3px 10px; border-radius: 99px; font-weight: 500; }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        .finding-details { color: var(--text-2); font-size: 12px; line-height: 1.6; }
+        .resolution-text { color: var(--text-2); font-size: 12px; line-height: 1.6; }
+        .compliance-gauge { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+        .gauge-bar { flex: 1; height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+        .gauge-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+        .gauge-fill.success { background: var(--success); }
+        .gauge-fill.warning { background: var(--warning); }
+        .gauge-fill.danger { background: var(--danger); }
+        .compliance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .compliance-card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 20px; }
+        .compliance-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .compliance-card .rate { font-size: 32px; font-weight: 700; }
+        .compliance-card .rate.high { color: var(--success); }
+        .compliance-card .rate.medium { color: var(--warning); }
+        .compliance-card .rate.low { color: var(--danger); }
+        .compliance-card .rate.planned { color: var(--text-3); font-size: 20px; font-weight: 600; }
+        .compliance-card .breakdown { margin-top: 12px; font-size: 12px; color: var(--text-2); line-height: 1.6; }
+        .compliance-card.planned { background: var(--surface-2); }
+        .service-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0; overflow: hidden; }
+        .service-icon svg { width: 100%; height: 100%; border-radius: 6px; }
+        .alerts { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .alert-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; background: var(--surface-2); cursor: pointer; transition: all 0.15s; }
+        .alert-item:hover { background: var(--border); }
+        .alert-item.critical { background: var(--danger-soft); border-left: 3px solid var(--danger); }
+        .alert-item.warning { background: var(--warning-soft); border-left: 3px solid var(--warning); }
+        .alert-item.success { background: var(--success-soft); border-left: 3px solid var(--success); }
+        .alert-count { font-size: 20px; font-weight: 700; min-width: 32px; text-align: center; }
+        .alert-item.critical .alert-count { color: var(--danger); }
+        .alert-item.warning .alert-count { color: var(--warning); }
+        .alert-item.success .alert-count { color: var(--success); }
+        .alert-info { flex: 1; min-width: 0; }
+        .alert-domain { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .alert-category { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+        .demo-banner { background: var(--warning-soft); border: 2px solid var(--warning); border-radius: 12px; padding: 14px 20px; margin-bottom: 28px; display: flex; align-items: flex-start; gap: 12px; font-size: 13px; line-height: 1.6; }
+        .demo-banner strong { color: var(--warning); font-weight: 700; }
+        .demo-banner svg { width: 20px; height: 20px; color: var(--warning); flex-shrink: 0; margin-top: 1px; }
+        .console { font-family: 'JetBrains Mono', monospace; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-size: 11.5px; color: var(--text); line-height: 1.7; white-space: pre; overflow-x: auto; }
+        .console .pass { color: var(--success); }
+        .console .fail { color: var(--danger); }
+        .console .na { color: var(--text-3); }
+        .console .cmt { color: var(--text-3); font-style: italic; }
+        .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+        @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .metrics { grid-template-columns: repeat(2, 1fr); } .evidence-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .metrics { grid-template-columns: 1fr; } .main { padding: 20px; } }
+    </style>
 </head>
 <body>
-<div class="page">
+<div class="layout">
 
-  <!-- ==================== HEADER ==================== -->
-  <div class="header">
-    <div>
-      <h1>AI/ML Security Assessment — OWASP LLM Top 10 Coverage</h1>
-      <div class="subtitle">Demo preview of the enhanced report after adding 18 OWASP LLM (2025) checks to the 51 existing service checks. Visuals mirror the report that <code>generate_consolidated_report</code> Lambda produces today, with the new Compliance Dashboard, OWASP detail table, and compliance-mapped findings column.</div>
-      <div class="meta">Prepared by Pranjit Biswas · For review by Agasthi Kothurkar · May 12, 2026</div>
-    </div>
-    <button class="theme-toggle" id="themeToggle">Dark Mode</button>
-  </div>
+    <!-- ==================== SIDEBAR (matches prototype exactly) ==================== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>AI/ML Security &amp; Compliance</h1>
+            <p>OWASP Top 10 Review Demo</p>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>
+            <span class="theme-label">Dark Mode</span>
+        </button>
 
-  <div class="callout demo">
-    <strong>This is a demo / review document.</strong> It shows what the shipped HTML report will look like after Phase 1–Phase 3 land. The numbers in the "OWASP Assessment Preview" section below come from the fixture used to regenerate <code>sample-reports/security_assessment_single_account.html</code> on the feature branch. The "Live AWS Validation Evidence" section below is copied verbatim from real runs in account 676206921018 / us-east-1.
-  </div>
+        <nav class="nav-section">
+            <h3>Navigation</h3>
+            <a href="#overview" class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Overview
+            </a>
+            <a href="#compliance-dashboard" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                Compliance Dashboard
+            </a>
+            <a href="#owasp" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1"/></svg>
+                OWASP Top 10 LLM
+                <span class="count">10</span>
+            </a>
+            <a href="#new-checks" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                New OWASP Checks
+                <span class="count">18</span>
+            </a>
+            <a href="#findings-preview" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Findings Preview
+            </a>
+            <a href="#live-evidence" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Live AWS Evidence
+            </a>
+            <a href="#testing" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                Testing Summary
+            </a>
+            <a href="#whats-pushed" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                What's Being Pushed
+            </a>
+        </nav>
 
-  <!-- ==================== OVERVIEW METRICS ==================== -->
-  <div class="section-title">
-    Overview
-    <span class="count-pill">Synthesized from real checks + live runs</span>
-  </div>
+        <nav class="nav-section">
+            <h3>By Service</h3>
+            <a href="#findings-preview" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 4.5v9L12 21 3 16.5v-9L12 3z"/></svg>
+                Bedrock
+                <span class="count">14</span>
+            </a>
+            <a href="#findings-preview" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                SageMaker
+                <span class="count">25</span>
+            </a>
+            <a href="#findings-preview" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6m11-11h-6m-10 0H1"/></svg>
+                AgentCore
+                <span class="count">13</span>
+            </a>
+            <a href="#owasp" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                OWASP
+                <span class="count">18</span>
+            </a>
+        </nav>
 
-  <div class="metrics">
-    <div class="metric">
-      <div class="metric-label">Total Checks</div>
-      <div class="metric-value">69</div>
-      <div class="metric-sub">51 service-level + 18 OWASP extensions</div>
-    </div>
-    <div class="metric accent">
-      <div class="metric-label">New OWASP Checks</div>
-      <div class="metric-value">18</div>
-      <div class="metric-sub">OW-01 through OW-18 (one reserved gap)</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Unit Tests</div>
-      <div class="metric-value">152</div>
-      <div class="metric-sub">passing across 9 modules</div>
-    </div>
-    <div class="metric success">
-      <div class="metric-label">Live AWS Runs</div>
-      <div class="metric-value">2</div>
-      <div class="metric-sub">empty-account + seeded — both verified</div>
-    </div>
-  </div>
+        <nav class="nav-section">
+            <h3>Compliance Frameworks</h3>
+            <a href="#compliance-dashboard" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1"/></svg>
+                OWASP Top 10 LLM
+                <span class="count">10</span>
+            </a>
+            <a href="#compliance-dashboard" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                NIST AI RMF 1.0
+                <span class="count">—</span>
+            </a>
+            <a href="#compliance-dashboard" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>
+                MITRE ATLAS
+                <span class="count">—</span>
+            </a>
+            <a href="#compliance-dashboard" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                HIPAA
+                <span class="count">—</span>
+            </a>
+        </nav>
 
-  <!-- ==================== COMPLIANCE DASHBOARD ==================== -->
-  <div class="section-title">
-    Compliance Dashboard
-    <span class="count-pill">Phase 1b deliverable</span>
-  </div>
+        <div class="sidebar-footer">
+            <p>Prepared: May 12, 2026</p>
+            <p>Branch: feature/owasp-llm-phase1a-schema-and-tagging</p>
+            <p style="margin-top: 8px;"><a href="https://github.com/prancst2004/sample-aiml-security-assessment/tree/feature/owasp-llm-phase1a-schema-and-tagging">Feature Branch on GitHub</a></p>
+        </div>
+    </aside>
 
-  <div class="note">
-    <strong>Framework coverage:</strong> OWASP Top 10 for LLM Applications (2025) is <em>actively assessed</em>. NIST AI RMF 1.0, MITRE ATLAS, and HIPAA are planned for a follow-up PR and shown here as placeholders. Findings already carry mappings for these frameworks when applicable so those dashboards can light up with no schema change.
-  </div>
+    <!-- ==================== MAIN ==================== -->
+    <main class="main">
 
-  <div class="compliance-grid">
-    <div class="compliance-card">
-      <h4><span class="framework-badge owasp">OWASP</span> OWASP Top 10 for LLM</h4>
-      <div class="rate warn">60%</div>
-      <div class="breakdown"><strong>6</strong> of 10 categories compliant</div>
-      <div class="breakdown" style="margin-top: 4px;">
-        <span style="color: var(--success);">5 Compliant</span> ·
-        <span style="color: var(--warning);">3 Partial</span> ·
-        <span style="color: var(--danger);">2 Non-Compliant</span>
-      </div>
-    </div>
-    <div class="compliance-card planned">
-      <h4><span class="framework-badge nist">NIST</span> NIST AI RMF 1.0</h4>
-      <div class="rate planned">Planned</div>
-      <div class="breakdown">Schema + placeholder ready. Mapping work in a follow-up PR.</div>
-    </div>
-    <div class="compliance-card planned">
-      <h4><span class="framework-badge atlas">ATLAS</span> MITRE ATLAS</h4>
-      <div class="rate planned">Planned</div>
-      <div class="breakdown">Schema + placeholder ready. Mapping work in a follow-up PR.</div>
-    </div>
-    <div class="compliance-card planned">
-      <h4><span class="framework-badge hipaa">HIPAA</span> HIPAA AI/ML</h4>
-      <div class="rate planned">Planned</div>
-      <div class="breakdown">Schema + placeholder ready. Mapping work in a follow-up PR.</div>
-    </div>
-  </div>
+        <!-- Demo banner -->
+        <div class="demo-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div><strong>Review demo.</strong> This page previews how the shipped HTML report looks after the OWASP LLM Top 10 work lands (Phases 1–3). The Compliance Dashboard, OWASP table, and findings preview come from the fixture used to regenerate <code>sample-reports/security_assessment_single_account.html</code>. The Live AWS Evidence section is copied verbatim from real runs in account 676206921018 / us-east-1 on 2026-05-12.</div>
+        </div>
 
-  <!-- ==================== OWASP DETAIL TABLE ==================== -->
-  <div class="section-title">
-    OWASP LLM Top 10 (2025) — Per-Category Status
-    <span class="count-pill">New in Phase 1b</span>
-  </div>
+        <!-- ==================== OVERVIEW ==================== -->
+        <section id="overview" class="section">
+            <div class="page-header">
+                <h2>Security &amp; Compliance Assessment Overview</h2>
+                <div class="page-header-meta">
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>May 12, 2026 19:00 UTC</span>
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account 676206921018</span>
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>4 Compliance Frameworks (1 active, 3 planned)</span>
+                </div>
+            </div>
 
-  <div class="note">
-    <strong>How to read this table:</strong>
-    <span class="pill compliant">Compliant</span> all mapped checks passed ·
-    <span class="pill partial">Partial</span> controls passed but AWS control plane cannot fully assess (LLM03, LLM05 have app-layer dimensions) ·
-    <span class="pill non-compliant">Non-Compliant</span> at least one mapped check failed ·
-    <span class="pill not-assessed">Not Assessed</span> no mapped findings yet.
-  </div>
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-label">Security Checks</div>
+                    <div class="metric-value">69</div>
+                    <div class="metric-sub">51 service-level + 18 OWASP</div>
+                </div>
+                <div class="metric accent">
+                    <div class="metric-label">New OWASP Checks</div>
+                    <div class="metric-value">18</div>
+                    <div class="metric-sub">OW-01 through OW-18</div>
+                </div>
+                <div class="metric purple">
+                    <div class="metric-label">Compliance Controls</div>
+                    <div class="metric-value">10</div>
+                    <div class="metric-sub">OWASP LLM01..LLM10 mapped</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Unit Tests</div>
+                    <div class="metric-value">152</div>
+                    <div class="metric-sub">passing across 9 modules</div>
+                </div>
+                <div class="metric highlight">
+                    <div class="metric-label">Live AWS Runs</div>
+                    <div class="metric-value">2</div>
+                    <div class="metric-sub">empty + seeded · both verified</div>
+                </div>
+            </div>
 
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 9%;">ID</th>
-          <th style="width: 24%;">Vulnerability</th>
-          <th style="width: 39%;">AWS Controls Evaluated</th>
-          <th style="width: 28%;">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>LLM01</code></td>
-          <td><strong>Prompt Injection</strong></td>
-          <td>BR-05 guardrail presence · OW-01 PROMPT_ATTACK strength · OW-02 KB source trust</td>
-          <td><span class="pill non-compliant">Non-Compliant</span> <span style="font-size: 11px; color: var(--text-2); margin-left: 6px;">1 Failed</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM02</code></td>
-          <td><strong>Sensitive Information Disclosure</strong></td>
-          <td>BR-04 logging · BR-09 KB encryption · OW-03 PII redaction · OW-04 log retention · OW-17 KB retrieval policy</td>
-          <td><span class="pill non-compliant">Non-Compliant</span> <span style="font-size: 11px; color: var(--text-2); margin-left: 6px;">3 Failed</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM03</code></td>
-          <td><strong>Supply Chain</strong></td>
-          <td>AC-05 ECR encryption · OW-05 model provenance · OW-06 JumpStart/Marketplace · OW-16 image scan</td>
-          <td><span class="pill partial">Partial</span> <span style="font-size: 11px; color: var(--text-2); margin-left: 6px;">1 Failed · app-layer scope</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM04</code></td>
-          <td><strong>Data and Model Poisoning</strong></td>
-          <td>SM-05 MLOps · SM-07 Model Monitor · OW-07 KB ingestion role scope</td>
-          <td><span class="pill compliant">Compliant</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM05</code></td>
-          <td><strong>Improper Output Handling</strong></td>
-          <td>OW-08 guardrail output filter (compensating only)</td>
-          <td><span class="pill partial">Partial</span> <span style="font-size: 11px; color: var(--text-2); margin-left: 6px;">compensating control only</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM06</code></td>
-          <td><strong>Excessive Agency</strong></td>
-          <td>BR-01/08/10 IAM · AC-02 IAM Full Access · OW-09 action-group wildcards · OW-10 HITL · OW-18 sub-agents</td>
-          <td><span class="pill non-compliant">Non-Compliant</span> <span style="font-size: 11px; color: var(--text-2); margin-left: 6px;">1 Failed</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM07</code></td>
-          <td><strong>System Prompt Leakage</strong></td>
-          <td>BR-07 prompt mgmt · OW-11 managed prompts (partial app-layer)</td>
-          <td><span class="pill partial">Partial</span> <span style="font-size: 11px; color: var(--text-2); margin-left: 6px;">partial app-layer</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM08</code></td>
-          <td><strong>Vector & Embedding Weaknesses</strong></td>
-          <td>BR-09 KB encryption · OW-12 vector store network · OW-13 multi-tenant KB</td>
-          <td><span class="pill compliant">Compliant</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM09</code></td>
-          <td><strong>Misinformation</strong></td>
-          <td>OW-14 contextual grounding · SM-07 Model Monitor</td>
-          <td><span class="pill compliant">Compliant</span></td>
-        </tr>
-        <tr>
-          <td><code>LLM10</code></td>
-          <td><strong>Unbounded Consumption</strong></td>
-          <td>OW-15 proactive guardrail wordPolicy + OW-15 detective CloudWatch alarms / Budgets</td>
-          <td><span class="pill compliant">Compliant</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="card">
+                <div class="card-header"><h3>Priority Recommendations (from demo fixture)</h3></div>
+                <div class="card-body">
+                    <div class="alerts">
+                        <div class="alert-item critical">
+                            <div class="alert-count">1</div>
+                            <div class="alert-info">
+                                <div class="alert-domain">KB Retrieval Policy Missing</div>
+                                <div class="alert-category">Bedrock · OWASP LLM02 · OW-17</div>
+                            </div>
+                        </div>
+                        <div class="alert-item critical">
+                            <div class="alert-count">1</div>
+                            <div class="alert-info">
+                                <div class="alert-domain">Action Group Wildcard Permissions</div>
+                                <div class="alert-category">Bedrock · OWASP LLM06 · OW-09</div>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-count">1</div>
+                            <div class="alert-info">
+                                <div class="alert-domain">Invocation Log Retention Insufficient</div>
+                                <div class="alert-category">Bedrock · OWASP LLM02 · OW-04</div>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-count">1</div>
+                            <div class="alert-info">
+                                <div class="alert-domain">PII Redaction Incomplete</div>
+                                <div class="alert-category">Bedrock · OWASP LLM02 · OW-03</div>
+                            </div>
+                        </div>
+                        <div class="alert-item success">
+                            <div class="alert-count">6</div>
+                            <div class="alert-info">
+                                <div class="alert-domain">Compliant OWASP Categories</div>
+                                <div class="alert-category">LLM04, LLM08, LLM09, LLM10 + more</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <!-- ==================== NEW CHECKS LIST ==================== -->
-  <div class="section-title">
-    New Checks in This PR — All 18 OWASP Extensions
-    <span class="count-pill">Phase 2a + 2b + 2b.2</span>
-  </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Severity &amp; Compliance Legend</h3>
+                    <a href="#whats-pushed" style="font-size: 12px; color: var(--accent); text-decoration: none;">View full PR summary</a>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table style="min-width: 100%; table-layout: fixed;">
+                        <thead>
+                            <tr>
+                                <th style="width: 12%;">Severity</th>
+                                <th style="width: 32%;">Security Meaning</th>
+                                <th style="width: 12%;">Compliance</th>
+                                <th style="width: 32%;">Compliance Meaning</th>
+                                <th style="width: 12%;">Timeline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center;"><span class="severity high">High</span></td>
+                                <td class="finding-details">Direct security risk — IAM / access-control gaps, guardrail bypasses</td>
+                                <td style="text-align: center;"><span class="status non-compliant">Non-Compliant</span></td>
+                                <td class="finding-details">At least one mapped check failed</td>
+                                <td class="resolution-text"><strong>7 days</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;"><span class="severity medium">Medium</span></td>
+                                <td class="finding-details">Defense-in-depth gaps — encryption, logging</td>
+                                <td style="text-align: center;"><span class="status partial">Partial</span></td>
+                                <td class="finding-details">Passed, but AWS control plane cannot fully assess (app-layer dimensions)</td>
+                                <td class="resolution-text"><strong>30 days</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;"><span class="severity low">Low</span></td>
+                                <td class="finding-details">Best-practice deviations</td>
+                                <td style="text-align: center;"><span class="status compliant">Compliant</span></td>
+                                <td class="finding-details">All mapped checks passed</td>
+                                <td class="resolution-text"><strong>90 days</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;"><span class="severity na">Informational</span></td>
+                                <td class="finding-details">No resources found or advisory</td>
+                                <td style="text-align: center;"><span class="status na">N/A</span></td>
+                                <td class="finding-details">No mapped findings</td>
+                                <td class="resolution-text">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 7%;">Check</th>
-          <th style="width: 28%;">Name</th>
-          <th style="width: 9%;">Severity</th>
-          <th style="width: 14%;">OWASP</th>
-          <th style="width: 16%;">Delivery</th>
-          <th style="width: 26%;">Coverage Type</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><code>OW-01</code></td><td>Guardrail Prompt-Attack Filter Strength</td><td><span class="pill high">High</span></td><td><span class="framework-badge owasp">LLM01</span></td><td>bedrock inline</td><td>full</td></tr>
-        <tr><td><code>OW-02</code></td><td>Knowledge Base Source Trust</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM01/03</span></td><td>owasp_assessments</td><td>partial-app-layer</td></tr>
-        <tr><td><code>OW-03</code></td><td>Guardrail PII Redaction</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td>bedrock inline</td><td>full</td></tr>
-        <tr><td><code>OW-04</code></td><td>Invocation Log Retention &amp; Access</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td>owasp_assessments</td><td>partial-app-layer</td></tr>
-        <tr><td><code>OW-05</code></td><td>Imported/Custom Model Provenance</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td>owasp_assessments</td><td>partial-app-layer</td></tr>
-        <tr><td><code>OW-06</code></td><td>SageMaker JumpStart &amp; Marketplace Inventory</td><td><span class="pill low">Low</span></td><td><span class="framework-badge owasp">LLM03</span></td><td>owasp_assessments</td><td>partial-app-layer (inventory)</td></tr>
-        <tr><td><code>OW-07</code></td><td>Knowledge Base Ingestion Role Scope</td><td><span class="pill high">High</span></td><td><span class="framework-badge owasp">LLM04</span></td><td>owasp_assessments</td><td>partial-app-layer</td></tr>
-        <tr><td><code>OW-08</code></td><td>Guardrail Output Filter</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM05</span></td><td>bedrock inline</td><td>compensating</td></tr>
-        <tr><td><code>OW-09</code></td><td>Agent Action-Group Wildcard Scope</td><td><span class="pill high">High</span></td><td><span class="framework-badge owasp">LLM06</span></td><td>owasp_assessments</td><td>full</td></tr>
-        <tr><td><code>OW-10</code></td><td>Human-in-the-Loop &amp; Confirmation Flow</td><td><span class="pill info">Info</span></td><td><span class="framework-badge owasp">LLM06</span></td><td>owasp_assessments</td><td>partial-app-layer (inventory)</td></tr>
-        <tr><td><code>OW-11</code></td><td>System Prompt Protection</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM07</span></td><td>bedrock inline</td><td>partial-app-layer</td></tr>
-        <tr><td><code>OW-12</code></td><td>Vector Store Network Isolation</td><td><span class="pill high">High</span></td><td><span class="framework-badge owasp">LLM08</span></td><td>owasp_assessments</td><td>full</td></tr>
-        <tr><td><code>OW-13</code></td><td>Multi-Tenant Knowledge Base Isolation</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM08</span></td><td>owasp_assessments</td><td>partial-app-layer (heuristic)</td></tr>
-        <tr><td><code>OW-14</code></td><td>Contextual Grounding Guardrail</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM09</span></td><td>bedrock inline</td><td>full</td></tr>
-        <tr><td><code>OW-15</code></td><td>Invocation Rate, Token &amp; Cost Controls</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM10</span></td><td>bedrock + owasp_assessments</td><td>partial-app-layer (split legs)</td></tr>
-        <tr><td><code>OW-16</code></td><td>Container Image Scanning</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td>agentcore inline</td><td>partial-app-layer</td></tr>
-        <tr><td><code>OW-17</code></td><td>Knowledge Base Retrieval Access Policy</td><td><span class="pill high">High</span></td><td><span class="framework-badge owasp">LLM02</span></td><td>owasp_assessments</td><td>full</td></tr>
-        <tr><td><code>OW-18</code></td><td>Multi-Agent Sub-Agent Inventory</td><td><span class="pill medium">Medium</span></td><td><span class="framework-badge owasp">LLM06</span></td><td>owasp_assessments</td><td>partial-app-layer</td></tr>
-      </tbody>
-    </table>
-  </div>
+        <!-- ==================== COMPLIANCE DASHBOARD ==================== -->
+        <section id="compliance-dashboard" class="section">
+            <div class="section-title">
+                Compliance Dashboard
+                <span class="count-pill">Phase 1b deliverable</span>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="compliance-grid">
+                        <div class="compliance-card">
+                            <h4><span class="framework-badge owasp">OWASP</span> OWASP Top 10 for LLM</h4>
+                            <div class="rate medium">60%</div>
+                            <div class="compliance-gauge">
+                                <div class="gauge-bar"><div class="gauge-fill warning" style="width: 60%;"></div></div>
+                            </div>
+                            <div class="breakdown">
+                                <strong>6</strong> of 10 categories compliant<br>
+                                <span style="color: var(--success);">5 Compliant</span> ·
+                                <span style="color: var(--warning);">3 Partial</span> ·
+                                <span style="color: var(--danger);">2 Non-Compliant</span>
+                            </div>
+                        </div>
+                        <div class="compliance-card planned">
+                            <h4><span class="framework-badge nist">NIST</span> NIST AI RMF 1.0</h4>
+                            <div class="rate planned">Planned</div>
+                            <div class="breakdown">Schema and dashboard placeholder are ready. Mapping work lands in a follow-up PR; findings can already carry <code>NIST-AI-RMF</code> entries in <code>Compliance_Mappings</code>.</div>
+                        </div>
+                        <div class="compliance-card planned">
+                            <h4><span class="framework-badge atlas">ATLAS</span> MITRE ATLAS</h4>
+                            <div class="rate planned">Planned</div>
+                            <div class="breakdown">Schema and dashboard placeholder are ready. Mapping work lands in a follow-up PR.</div>
+                        </div>
+                        <div class="compliance-card planned">
+                            <h4><span class="framework-badge hipaa">HIPAA</span> HIPAA AI/ML</h4>
+                            <div class="rate planned">Planned</div>
+                            <div class="breakdown">Schema and dashboard placeholder are ready. Mapping work lands in a follow-up PR.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- ==================== SAMPLE FINDINGS ==================== -->
-  <div class="section-title">
-    Preview: New Findings Column (sample rows from <code>security_assessment_single_account.html</code>)
-    <span class="count-pill">Real output, curated fixture</span>
-  </div>
+        <!-- ==================== OWASP DETAIL ==================== -->
+        <section id="owasp" class="section">
+            <div class="section-title">
+                OWASP Top 10 for LLM Applications 2025
+                <span class="count-pill">Per-category status</span>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>Compliance Status by Vulnerability Category</h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">ID</th>
+                                    <th style="width: 22%;">Vulnerability</th>
+                                    <th style="width: 42%;">AWS Controls Evaluated</th>
+                                    <th style="width: 14%;">Status</th>
+                                    <th style="width: 14%;">Coverage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>LLM01</code></td>
+                                    <td class="col-domain">Prompt Injection</td>
+                                    <td class="finding-details">BR-05 guardrail presence · OW-01 PROMPT_ATTACK strength · OW-02 KB source trust</td>
+                                    <td><span class="status non-compliant">Non-Compliant</span></td>
+                                    <td class="finding-details">full + partial</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM02</code></td>
+                                    <td class="col-domain">Sensitive Information Disclosure</td>
+                                    <td class="finding-details">BR-04 logging · BR-09 KB encryption · OW-03 PII redaction · OW-04 log retention · OW-17 KB retrieval policy</td>
+                                    <td><span class="status non-compliant">Non-Compliant</span></td>
+                                    <td class="finding-details">full</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM03</code></td>
+                                    <td class="col-domain">Supply Chain</td>
+                                    <td class="finding-details">AC-05 ECR encryption · OW-05 model provenance · OW-06 JumpStart/Marketplace · OW-16 image scan</td>
+                                    <td><span class="status partial">Partial</span></td>
+                                    <td class="finding-details">partial-app-layer</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM04</code></td>
+                                    <td class="col-domain">Data and Model Poisoning</td>
+                                    <td class="finding-details">SM-05 MLOps · SM-07 Model Monitor · OW-07 KB ingestion role scope</td>
+                                    <td><span class="status compliant">Compliant</span></td>
+                                    <td class="finding-details">partial-app-layer</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM05</code></td>
+                                    <td class="col-domain">Improper Output Handling</td>
+                                    <td class="finding-details">OW-08 guardrail output filter (compensating only — primary control is at the application layer)</td>
+                                    <td><span class="status partial">Partial</span></td>
+                                    <td class="finding-details">compensating</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM06</code></td>
+                                    <td class="col-domain">Excessive Agency</td>
+                                    <td class="finding-details">BR-01/08/10 IAM · AC-02 IAM Full Access · OW-09 action-group wildcards · OW-10 HITL · OW-18 sub-agents</td>
+                                    <td><span class="status non-compliant">Non-Compliant</span></td>
+                                    <td class="finding-details">full + partial</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM07</code></td>
+                                    <td class="col-domain">System Prompt Leakage</td>
+                                    <td class="finding-details">BR-07 prompt management · OW-11 managed prompts</td>
+                                    <td><span class="status partial">Partial</span></td>
+                                    <td class="finding-details">partial-app-layer</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM08</code></td>
+                                    <td class="col-domain">Vector and Embedding Weaknesses</td>
+                                    <td class="finding-details">BR-09 KB encryption · OW-12 vector store network · OW-13 multi-tenant KB</td>
+                                    <td><span class="status compliant">Compliant</span></td>
+                                    <td class="finding-details">full</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM09</code></td>
+                                    <td class="col-domain">Misinformation</td>
+                                    <td class="finding-details">OW-14 contextual grounding · SM-07 Model Monitor</td>
+                                    <td><span class="status compliant">Compliant</span></td>
+                                    <td class="finding-details">full</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LLM10</code></td>
+                                    <td class="col-domain">Unbounded Consumption</td>
+                                    <td class="finding-details">OW-15 proactive (guardrail wordPolicy) + OW-15 detective (CloudWatch alarms / Budgets)</td>
+                                    <td><span class="status compliant">Compliant</span></td>
+                                    <td class="finding-details">full</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 8%;">Check</th>
-          <th style="width: 27%;">Finding</th>
-          <th style="width: 30%;">Details</th>
-          <th style="width: 15%;">Compliance</th>
-          <th style="width: 10%;">Severity</th>
-          <th style="width: 10%;">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>OW-01</code></td>
-          <td class="fd-name">Prompt-Attack Filter Strong<div class="fd-detail">Guardrail 'prod-guardrail' has PROMPT_ATTACK filter at HIGH strength on both input and output.</div></td>
-          <td class="fd-detail">No action required.</td>
-          <td><span class="framework-badge owasp">LLM01 full</span></td>
-          <td><span class="pill info">Info</span></td>
-          <td><span class="pill passed">Passed</span></td>
-        </tr>
-        <tr>
-          <td><code>OW-03</code></td>
-          <td class="fd-name">PII Redaction Incomplete<div class="fd-detail">Guardrail 'prod-guardrail' has piiEntities configured but is missing baseline CREDIT_DEBIT_CARD_NUMBER.</div></td>
-          <td class="fd-detail">Add BLOCK or ANONYMIZE entries for the missing PII types: CREDIT_DEBIT_CARD_NUMBER.</td>
-          <td><span class="framework-badge owasp">LLM02 full</span></td>
-          <td><span class="pill medium">Medium</span></td>
-          <td><span class="pill failed">Failed</span></td>
-        </tr>
-        <tr>
-          <td><code>OW-04</code></td>
-          <td class="fd-name">Invocation Log Retention Insufficient<div class="fd-detail">Bedrock invocation logs go to CloudWatch log group '/aws/bedrock/invocations' — retention is 7 days (&lt; 30 minimum).</div></td>
-          <td class="fd-detail">Set CloudWatch log group retention to at least 30 days via PutRetentionPolicy.</td>
-          <td><span class="framework-badge owasp">LLM02 partial-app-layer</span></td>
-          <td><span class="pill medium">Medium</span></td>
-          <td><span class="pill failed">Failed</span></td>
-        </tr>
-        <tr>
-          <td><code>OW-09</code></td>
-          <td class="fd-name">Action Group Has Wildcard Permissions: OrderBot/PlaceOrder<div class="fd-detail">Action group 'PlaceOrder' on agent 'OrderBot' runs Lambda role 'PlaceOrderRole' which has 's3:*' on '*'. Excessive Agency risk under OWASP LLM06.</div></td>
-          <td class="fd-detail">Rewrite inline policies to scope s3 actions to the specific order buckets required.</td>
-          <td><span class="framework-badge owasp">LLM06 full</span></td>
-          <td><span class="pill high">High</span></td>
-          <td><span class="pill failed">Failed</span></td>
-        </tr>
-        <tr>
-          <td><code>OW-15</code></td>
-          <td class="fd-name">Detective Consumption Controls Present<div class="fd-detail">After-the-fact cost / rate monitoring for Bedrock or SageMaker is configured: 1 CloudWatch alarm(s): BedrockInvocationSpike.</div></td>
-          <td class="fd-detail">No action required.</td>
-          <td><span class="framework-badge owasp">LLM10 partial-app-layer</span></td>
-          <td><span class="pill info">Info</span></td>
-          <td><span class="pill passed">Passed</span></td>
-        </tr>
-        <tr>
-          <td><code>OW-17</code></td>
-          <td class="fd-name">KB Retrieval Policy Missing: SupportKB<div class="fd-detail">KB 'SupportKB' has no resource-based policy. Any principal with bedrock-agent:Retrieve can query it — direct RAG disclosure risk.</div></td>
-          <td class="fd-detail">Attach a resource-based policy restricting Retrieve / RetrieveAndGenerate to specific IAM principals.</td>
-          <td><span class="framework-badge owasp">LLM02 full</span></td>
-          <td><span class="pill high">High</span></td>
-          <td><span class="pill failed">Failed</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <!-- ==================== NEW CHECKS ==================== -->
+        <section id="new-checks" class="section">
+            <div class="section-title">
+                New OWASP Checks — All 18 Extensions
+                <span class="count-pill">Phase 2a + 2b + 2b.2</span>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>OW-01 through OW-18</h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 7%;">Check</th>
+                                    <th style="width: 30%;">Name</th>
+                                    <th style="width: 10%;">Severity</th>
+                                    <th style="width: 12%;">OWASP</th>
+                                    <th style="width: 18%;">Delivery Module</th>
+                                    <th style="width: 23%;">Coverage Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>OW-01</code></td><td class="col-domain">Guardrail Prompt-Attack Filter Strength</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM01</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td></tr>
+                                <tr><td><code>OW-02</code></td><td class="col-domain">Knowledge Base Source Trust</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM01/03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-03</code></td><td class="col-domain">Guardrail PII Redaction</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td></tr>
+                                <tr><td><code>OW-04</code></td><td class="col-domain">Invocation Log Retention &amp; Access</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-05</code></td><td class="col-domain">Imported/Custom Model Provenance</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-06</code></td><td class="col-domain">SageMaker JumpStart &amp; Marketplace Inventory</td><td><span class="severity low">Low</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td></tr>
+                                <tr><td><code>OW-07</code></td><td class="col-domain">Knowledge Base Ingestion Role Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM04</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-08</code></td><td class="col-domain">Guardrail Output Filter</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM05</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">compensating</td></tr>
+                                <tr><td><code>OW-09</code></td><td class="col-domain">Agent Action-Group Wildcard Scope</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td></tr>
+                                <tr><td><code>OW-10</code></td><td class="col-domain">Human-in-the-Loop &amp; Confirmation Flow</td><td><span class="severity na">Info</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (inventory)</td></tr>
+                                <tr><td><code>OW-11</code></td><td class="col-domain">System Prompt Protection</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM07</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-12</code></td><td class="col-domain">Vector Store Network Isolation</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td></tr>
+                                <tr><td><code>OW-13</code></td><td class="col-domain">Multi-Tenant Knowledge Base Isolation</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM08</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer (heuristic)</td></tr>
+                                <tr><td><code>OW-14</code></td><td class="col-domain">Contextual Grounding Guardrail</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM09</span></td><td class="finding-details">bedrock inline</td><td class="finding-details">full</td></tr>
+                                <tr><td><code>OW-15</code></td><td class="col-domain">Invocation Rate, Token &amp; Cost Controls</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM10</span></td><td class="finding-details">bedrock + owasp_assessments</td><td class="finding-details">partial-app-layer (split)</td></tr>
+                                <tr><td><code>OW-16</code></td><td class="col-domain">Container Image Scanning</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM03</span></td><td class="finding-details">agentcore inline</td><td class="finding-details">partial-app-layer</td></tr>
+                                <tr><td><code>OW-17</code></td><td class="col-domain">Knowledge Base Retrieval Access Policy</td><td><span class="severity high">High</span></td><td><span class="framework-badge owasp">LLM02</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">full</td></tr>
+                                <tr><td><code>OW-18</code></td><td class="col-domain">Multi-Agent Sub-Agent Inventory</td><td><span class="severity medium">Medium</span></td><td><span class="framework-badge owasp">LLM06</span></td><td class="finding-details">owasp_assessments</td><td class="finding-details">partial-app-layer</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- ==================== LIVE AWS VALIDATION EVIDENCE ==================== -->
-  <div class="section-title">
-    Live AWS Validation Evidence
-    <span class="count-pill">Account 676206921018 · us-east-1</span>
-  </div>
+        <!-- ==================== FINDINGS PREVIEW ==================== -->
+        <section id="findings-preview" class="section">
+            <div class="section-title">
+                Findings Preview — New Compliance Column in Action
+                <span class="count-pill">From sample-reports/security_assessment_single_account.html</span>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>Sample Findings with <code>Compliance_Mappings</code></h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">Check</th>
+                                    <th style="width: 26%;">Finding</th>
+                                    <th style="width: 28%;">Details</th>
+                                    <th style="width: 18%;">Compliance</th>
+                                    <th style="width: 10%;">Severity</th>
+                                    <th style="width: 10%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>OW-01</code></td>
+                                    <td class="col-domain">Prompt-Attack Filter Strong</td>
+                                    <td class="finding-details">Guardrail 'prod-guardrail' has PROMPT_ATTACK filter at HIGH strength on both input and output.</td>
+                                    <td><span class="framework-badge owasp">LLM01</span> <span class="finding-details">full</span></td>
+                                    <td><span class="severity na">Info</span></td>
+                                    <td><span class="status passed">Passed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>OW-03</code></td>
+                                    <td class="col-domain">PII Redaction Incomplete</td>
+                                    <td class="finding-details">Guardrail 'prod-guardrail' has piiEntities configured but is missing CREDIT_DEBIT_CARD_NUMBER.</td>
+                                    <td><span class="framework-badge owasp">LLM02</span> <span class="finding-details">full</span></td>
+                                    <td><span class="severity medium">Medium</span></td>
+                                    <td><span class="status failed">Failed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>OW-04</code></td>
+                                    <td class="col-domain">Invocation Log Retention Insufficient</td>
+                                    <td class="finding-details">Bedrock invocation logs go to CloudWatch log group '/aws/bedrock/invocations' — retention is 7 days (&lt; 30 minimum).</td>
+                                    <td><span class="framework-badge owasp">LLM02</span> <span class="finding-details">partial</span></td>
+                                    <td><span class="severity medium">Medium</span></td>
+                                    <td><span class="status failed">Failed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>OW-09</code></td>
+                                    <td class="col-domain">Action Group Has Wildcard Permissions</td>
+                                    <td class="finding-details">'PlaceOrder' on agent 'OrderBot' runs Lambda role 'PlaceOrderRole' which has 's3:*' on '*'. Excessive Agency risk.</td>
+                                    <td><span class="framework-badge owasp">LLM06</span> <span class="finding-details">full</span></td>
+                                    <td><span class="severity high">High</span></td>
+                                    <td><span class="status failed">Failed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>OW-15</code></td>
+                                    <td class="col-domain">Detective Consumption Controls Present</td>
+                                    <td class="finding-details">After-the-fact monitoring for Bedrock is configured: 1 CloudWatch alarm (BedrockInvocationSpike).</td>
+                                    <td><span class="framework-badge owasp">LLM10</span> <span class="finding-details">partial</span></td>
+                                    <td><span class="severity na">Info</span></td>
+                                    <td><span class="status passed">Passed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>OW-17</code></td>
+                                    <td class="col-domain">KB Retrieval Policy Missing: SupportKB</td>
+                                    <td class="finding-details">KB 'SupportKB' has no resource-based policy. Any principal with bedrock-agent:Retrieve can query it — direct RAG disclosure risk.</td>
+                                    <td><span class="framework-badge owasp">LLM02</span> <span class="finding-details">full</span></td>
+                                    <td><span class="severity high">High</span></td>
+                                    <td><span class="status failed">Failed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <div class="note">
-    The checks were run against a real AWS account, first empty and then with seeded resources (Bedrock guardrail, CloudWatch log group + Bedrock invocation logging, AWS Budget). State transitions matched the check specifications exactly. One real bug was caught during the seeded run (Bedrock <code>GetGuardrail</code> uses <code>words</code> in responses, not <code>wordsConfig</code> as in requests) and fixed in commit <code>7c4054e</code> with a new regression test.
-  </div>
-
-  <div class="evidence-grid">
-    <div class="evidence-card">
-      <h4>OWASP Lambda — Empty Account Baseline</h4>
-      <div style="font-size: 12px; color: var(--text-2); margin-bottom: 8px;">12 findings · 10 N/A · 2 Failed · 2.7s end-to-end</div>
-      <div class="console"><span class="cmt"># OW-04  Failed   Medium  Bedrock Invocation Logging Disabled</span>
-<span class="cmt"># OW-15  Failed   Medium  Detective Consumption Controls Missing</span>
-<span class="na">OW-02  N/A      Knowledge Base Source Trust — No KBs</span>
+        <!-- ==================== LIVE AWS EVIDENCE ==================== -->
+        <section id="live-evidence" class="section">
+            <div class="section-title">
+                Live AWS Validation Evidence
+                <span class="count-pill">Account 676206921018 · us-east-1</span>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <p class="finding-details" style="margin-bottom: 18px;">The checks were run against a real AWS account, first empty and then with seeded resources (Bedrock guardrail with mixed config, CloudWatch log group + Bedrock invocation logging, AWS Budget). Observed state transitions matched the check specifications exactly. <strong style="color: var(--text);">One real bug</strong> was caught during the seeded run — the Bedrock <code>GetGuardrail</code> API returns <code>wordPolicy.words</code> (not <code>wordsConfig</code>) — and fixed in commit <code>7c4054e</code> with a new regression test.</p>
+                    <div class="evidence-grid">
+                        <div>
+                            <h4 style="font-size: 13px; margin-bottom: 8px; font-weight: 600;">OWASP Lambda — Empty Account Baseline</h4>
+                            <p class="finding-details" style="margin-bottom: 10px;">12 findings · 10 N/A · 2 Failed · 2.7s end-to-end</p>
+                            <div class="console"><span class="na">OW-02  N/A      Knowledge Base Source Trust — No KBs</span>
 <span class="na">OW-17  N/A      KB Retrieval Policy — No KBs</span>
 <span class="na">OW-09  N/A      Agent Action Group Wildcards — No Agents</span>
 <span class="na">OW-07  N/A      KB Ingestion Role Scope — No KBs</span>
@@ -468,11 +708,11 @@
 <span class="na">OW-05  N/A      Model Provenance — No Custom Models</span>
 <span class="na">OW-06  N/A      JumpStart / Marketplace Inventory — None</span>
 <span class="fail">OW-15  Failed   Detective Consumption Controls Missing</span></div>
-    </div>
-    <div class="evidence-card">
-      <h4>OWASP Lambda — After Seeding (logging + budget)</h4>
-      <div style="font-size: 12px; color: var(--text-2); margin-bottom: 8px;">12 findings · 10 N/A · 1 Failed · 1 Passed · 3.0s</div>
-      <div class="console"><span class="cmt"># OW-04 transitioned from Disabled → Insufficient</span>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 13px; margin-bottom: 8px; font-weight: 600;">OWASP Lambda — After Seeding (logging + budget)</h4>
+                            <p class="finding-details" style="margin-bottom: 10px;">12 findings · 10 N/A · 1 Failed · 1 Passed · 3.0s</p>
+                            <div class="console"><span class="cmt"># OW-04 transitioned from Disabled → Insufficient</span>
 <span class="cmt"># OW-15 transitioned from Missing → Present</span>
 <span class="na">OW-02  N/A      Knowledge Base Source Trust — No KBs</span>
 <span class="na">OW-17  N/A      KB Retrieval Policy — No KBs</span>
@@ -486,148 +726,220 @@
 <span class="na">OW-05  N/A      Model Provenance — No Custom Models</span>
 <span class="na">OW-06  N/A      JumpStart / Marketplace Inventory — None</span>
 <span class="pass">OW-15  Passed   Detective Consumption Controls Present</span></div>
-    </div>
-  </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <div class="evidence-card" style="margin-bottom: 20px;">
-    <h4>Bedrock Lambda — Phase 2a Inline Checks Against Seeded Guardrail</h4>
-    <div style="font-size: 12px; color: var(--text-2); margin-bottom: 8px;">18 Bedrock findings total · 6 OW-XX · hitting the seeded guardrail qxjfofitorgf</div>
-    <div class="console"><span class="fail">OW-01  Failed   High    Prompt-Attack Filter Weak           </span><span class="cmt">// PROMPT_ATTACK output=NONE (should be HIGH)</span>
-<span class="fail">OW-03  Failed   Medium  PII Redaction Incomplete            </span><span class="cmt">// missing CREDIT_DEBIT_CARD_NUMBER</span>
+            <div class="card">
+                <div class="card-header"><h3>Bedrock Lambda — Phase 2a Inline Checks Against Seeded Guardrail</h3></div>
+                <div class="card-body">
+                    <p class="finding-details" style="margin-bottom: 10px;">18 Bedrock findings total · 6 OW-XX · hitting the seeded guardrail <code>qxjfofitorgf</code></p>
+                    <div class="console"><span class="fail">OW-01  Failed   High    Prompt-Attack Filter Weak</span>            <span class="cmt">// PROMPT_ATTACK output=NONE (should be HIGH)</span>
+<span class="fail">OW-03  Failed   Medium  PII Redaction Incomplete</span>             <span class="cmt">// missing CREDIT_DEBIT_CARD_NUMBER</span>
 <span class="pass">OW-08  Passed   Info    Output-Side Guardrail Controls Present</span> <span class="cmt">// word policy + content filters</span>
-<span class="pass">OW-14  Passed   Info    Contextual Grounding Enabled        </span><span class="cmt">// GROUNDING + RELEVANCE</span>
-<span class="pass">OW-15  Passed   Info    Proactive Input Envelope Present    </span><span class="cmt">// wordPolicy.words present</span>
-<span class="pass">OW-11  Passed   Info    Managed Prompts In Use              </span><span class="cmt">// no managed prompts = informational</span></div>
-  </div>
+<span class="pass">OW-14  Passed   Info    Contextual Grounding Enabled</span>         <span class="cmt">// GROUNDING + RELEVANCE filters</span>
+<span class="pass">OW-15  Passed   Info    Proactive Input Envelope Present</span>     <span class="cmt">// wordPolicy.words present</span>
+<span class="pass">OW-11  Passed   Info    Managed Prompts In Use</span>               <span class="cmt">// no managed prompts — informational</span></div>
+                </div>
+            </div>
 
-  <div class="card">
-    <div class="card-header"><h3>State Transitions Observed in the Seeded Run</h3></div>
-    <table class="transition-table">
-      <thead>
-        <tr>
-          <th style="width: 10%;">Check</th>
-          <th style="width: 26%;">Before (empty account)</th>
-          <th style="width: 26%;">After (seeded)</th>
-          <th style="width: 38%;">Why</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><code>OW-04</code></td><td>Logging Disabled <span class="pill failed">Failed</span></td><td>CW Retention Insufficient <span class="pill failed">Failed</span></td><td>Seeded 7-day retention &lt; 30-day minimum — correctly kept Failed but with a different finding</td></tr>
-        <tr><td><code>OW-15</code></td><td>Detective Missing <span class="pill failed">Failed</span></td><td>Detective Present <span class="pill passed">Passed</span></td><td>AWS Budget filtered to <code>Amazon Bedrock</code> detected</td></tr>
-        <tr><td><code>OW-01</code></td><td><span class="pill na">N/A</span> (no guardrails)</td><td>Filter Weak <span class="pill failed">Failed</span></td><td>Seeded PROMPT_ATTACK output=NONE — caught correctly</td></tr>
-        <tr><td><code>OW-03</code></td><td><span class="pill na">N/A</span></td><td>Redaction Incomplete <span class="pill failed">Failed</span></td><td>Seeded PII with EMAIL/PHONE/SSN only — missing CREDIT_DEBIT flagged</td></tr>
-        <tr><td><code>OW-08</code></td><td><span class="pill na">N/A</span></td><td>Output Controls Present <span class="pill passed">Passed</span></td><td>wordPolicy + contentPolicy filters detected</td></tr>
-        <tr><td><code>OW-14</code></td><td><span class="pill na">N/A</span></td><td>Grounding Enabled <span class="pill passed">Passed</span></td><td>GROUNDING + RELEVANCE contextualGroundingPolicy detected</td></tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="card">
+                <div class="card-header"><h3>State Transitions Observed in the Seeded Run</h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Check</th>
+                                    <th style="width: 25%;">Before (empty account)</th>
+                                    <th style="width: 25%;">After (seeded)</th>
+                                    <th style="width: 40%;">Why</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>OW-04</code></td><td><span class="status failed">Failed</span> Logging Disabled</td><td><span class="status failed">Failed</span> CW Retention Insufficient</td><td class="finding-details">Seeded 7-day retention &lt; 30-day minimum — correctly kept Failed but with a different finding name</td></tr>
+                                <tr><td><code>OW-15</code></td><td><span class="status failed">Failed</span> Detective Missing</td><td><span class="status passed">Passed</span> Detective Present</td><td class="finding-details">AWS Budget filtered to <code>Amazon Bedrock</code> correctly detected</td></tr>
+                                <tr><td><code>OW-01</code></td><td><span class="status na">N/A</span> (no guardrails)</td><td><span class="status failed">Failed</span> Filter Weak</td><td class="finding-details">Seeded PROMPT_ATTACK output=NONE — caught correctly</td></tr>
+                                <tr><td><code>OW-03</code></td><td><span class="status na">N/A</span></td><td><span class="status failed">Failed</span> Redaction Incomplete</td><td class="finding-details">Seeded PII with EMAIL/PHONE/SSN — missing CREDIT_DEBIT flagged</td></tr>
+                                <tr><td><code>OW-08</code></td><td><span class="status na">N/A</span></td><td><span class="status passed">Passed</span> Output Controls Present</td><td class="finding-details">wordPolicy + contentPolicy filters detected</td></tr>
+                                <tr><td><code>OW-14</code></td><td><span class="status na">N/A</span></td><td><span class="status passed">Passed</span> Grounding Enabled</td><td class="finding-details">GROUNDING + RELEVANCE contextualGroundingPolicy detected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- ==================== TESTING SUMMARY ==================== -->
-  <div class="section-title">
-    Testing Summary
-    <span class="count-pill">Final state on the feature branch</span>
-  </div>
+        <!-- ==================== TESTING ==================== -->
+        <section id="testing" class="section">
+            <div class="section-title">
+                Testing Summary
+                <span class="count-pill">Final state on the feature branch</span>
+            </div>
 
-  <div class="metrics">
-    <div class="metric success"><div class="metric-label">Unit Tests Passing</div><div class="metric-value">152</div><div class="metric-sub">across 9 test modules</div></div>
-    <div class="metric warning"><div class="metric-label">Pre-existing Upstream Fail</div><div class="metric-value">1</div><div class="metric-sub">service-badge, unchanged since before Phase 1</div></div>
-    <div class="metric accent"><div class="metric-label">Commits on Branch</div><div class="metric-value">8</div><div class="metric-sub">Phase 1a → Phase 3 + live fix</div></div>
-    <div class="metric"><div class="metric-label">Total Diff vs main</div><div class="metric-value">+9,219<span style="font-size: 14px; color: var(--text-2);"> / −3,463</span></div><div class="metric-sub">49 files changed</div></div>
-  </div>
+            <div class="metrics">
+                <div class="metric highlight">
+                    <div class="metric-label">Unit Tests Passing</div>
+                    <div class="metric-value">152</div>
+                    <div class="metric-sub">across 9 test modules</div>
+                </div>
+                <div class="metric warning">
+                    <div class="metric-label">Pre-existing Upstream Fail</div>
+                    <div class="metric-value">1</div>
+                    <div class="metric-sub">service-badge — unchanged</div>
+                </div>
+                <div class="metric accent">
+                    <div class="metric-label">Commits on Branch</div>
+                    <div class="metric-value">9</div>
+                    <div class="metric-sub">Phase 1a → Phase 3 + live fix + docs</div>
+                </div>
+                <div class="metric purple">
+                    <div class="metric-label">Diff vs main</div>
+                    <div class="metric-value">+10.8K</div>
+                    <div class="metric-sub">/ −3.5K · 53 files changed</div>
+                </div>
+            </div>
 
-  <div class="card">
-    <div class="card-header"><h3>Per-Module Test Breakdown</h3></div>
-    <table>
-      <thead>
-        <tr>
-          <th>Module</th>
-          <th>Test File</th>
-          <th style="text-align: right;">Tests</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>bedrock_assessments</td><td><code>test_compliance_mappings.py</code></td><td style="text-align: right;">17</td><td><span class="pill passed">Pass</span></td></tr>
-        <tr><td>bedrock_assessments</td><td><code>test_owasp_extensions.py</code></td><td style="text-align: right;">24</td><td><span class="pill passed">Pass</span> <span style="font-size:11px;color:var(--text-2);">+1 live-API regression</span></td></tr>
-        <tr><td>sagemaker_assessments</td><td><code>test_compliance_mappings.py</code></td><td style="text-align: right;">17</td><td><span class="pill passed">Pass</span></td></tr>
-        <tr><td>agentcore_assessments</td><td><code>test_compliance_mappings.py</code></td><td style="text-align: right;">17</td><td><span class="pill passed">Pass</span></td></tr>
-        <tr><td>agentcore_assessments</td><td><code>test_owasp_extensions.py</code></td><td style="text-align: right;">6</td><td><span class="pill passed">Pass</span></td></tr>
-        <tr><td>generate_consolidated_report</td><td><code>test_compliance_aggregator.py</code></td><td style="text-align: right;">23</td><td><span class="pill passed">Pass</span></td></tr>
-        <tr><td>generate_consolidated_report</td><td><code>test_generate_report.py</code></td><td style="text-align: right;">3 / 4</td><td><span class="pill partial">Partial (pre-existing upstream fail)</span></td></tr>
-        <tr><td>owasp_assessments</td><td><code>test_owasp_checks.py</code></td><td style="text-align: right;">20</td><td><span class="pill passed">Pass</span></td></tr>
-        <tr><td>owasp_assessments</td><td><code>test_owasp_checks_phase2b2.py</code></td><td style="text-align: right;">25</td><td><span class="pill passed">Pass</span></td></tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="card">
+                <div class="card-header"><h3>Per-Module Test Breakdown</h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">Module</th>
+                                    <th style="width: 35%;">Test File</th>
+                                    <th style="width: 12%; text-align: right;">Tests</th>
+                                    <th style="width: 23%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>bedrock_assessments</td><td><code>test_compliance_mappings.py</code></td><td style="text-align: right;">17</td><td><span class="status passed">Pass</span></td></tr>
+                                <tr><td>bedrock_assessments</td><td><code>test_owasp_extensions.py</code></td><td style="text-align: right;">24</td><td><span class="status passed">Pass</span> <span class="finding-details">+1 live-API regression</span></td></tr>
+                                <tr><td>sagemaker_assessments</td><td><code>test_compliance_mappings.py</code></td><td style="text-align: right;">17</td><td><span class="status passed">Pass</span></td></tr>
+                                <tr><td>agentcore_assessments</td><td><code>test_compliance_mappings.py</code></td><td style="text-align: right;">17</td><td><span class="status passed">Pass</span></td></tr>
+                                <tr><td>agentcore_assessments</td><td><code>test_owasp_extensions.py</code></td><td style="text-align: right;">6</td><td><span class="status passed">Pass</span></td></tr>
+                                <tr><td>generate_consolidated_report</td><td><code>test_compliance_aggregator.py</code></td><td style="text-align: right;">23</td><td><span class="status passed">Pass</span></td></tr>
+                                <tr><td>generate_consolidated_report</td><td><code>test_generate_report.py</code></td><td style="text-align: right;">3 / 4</td><td><span class="status partial">Partial (pre-existing)</span></td></tr>
+                                <tr><td>owasp_assessments</td><td><code>test_owasp_checks.py</code></td><td style="text-align: right;">20</td><td><span class="status passed">Pass</span></td></tr>
+                                <tr><td>owasp_assessments</td><td><code>test_owasp_checks_phase2b2.py</code></td><td style="text-align: right;">25</td><td><span class="status passed">Pass</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-  <div class="card">
-    <div class="card-header"><h3>Resources Seeded &amp; Torn Down During Live Validation</h3></div>
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 32%;">Resource</th>
-          <th style="width: 48%;">Purpose</th>
-          <th>Teardown Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><code>arn:aws:bedrock:us-east-1:*:guardrail/qxjfofitorgf</code></td><td>Exercise OW-01 / OW-03 / OW-08 / OW-14 / OW-15 proactive / OW-11</td><td><span class="pill passed">Deleted</span></td></tr>
-        <tr><td><code>/aws/bedrock/kiro-owasp-test</code> (CloudWatch log group)</td><td>Destination for Bedrock invocation logs (7-day retention → exercise OW-04 insufficient-retention path)</td><td><span class="pill passed">Deleted</span></td></tr>
-        <tr><td><code>kiro-owasp-bedrock-logging-role</code> (IAM role)</td><td>Allow Bedrock to write invocation logs (trust + inline policy)</td><td><span class="pill passed">Deleted</span></td></tr>
-        <tr><td>Bedrock model-invocation-logging config</td><td>Enable invocation logging account-wide</td><td><span class="pill passed">Deleted</span></td></tr>
-        <tr><td><code>kiro-owasp-bedrock-budget</code> (AWS Budget)</td><td>Exercise OW-15 detective leg (budget scoped to Amazon Bedrock)</td><td><span class="pill passed">Deleted</span></td></tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="card">
+                <div class="card-header"><h3>Resources Seeded &amp; Torn Down During Live Validation</h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 38%;">Resource</th>
+                                    <th style="width: 44%;">Purpose</th>
+                                    <th style="width: 18%;">Teardown Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>guardrail/qxjfofitorgf</code></td><td class="finding-details">Exercise OW-01 / OW-03 / OW-08 / OW-14 / OW-15 proactive / OW-11</td><td><span class="status passed">Deleted</span></td></tr>
+                                <tr><td><code>/aws/bedrock/kiro-owasp-test</code></td><td class="finding-details">CloudWatch log group destination for Bedrock invocation logs — 7-day retention → exercise OW-04</td><td><span class="status passed">Deleted</span></td></tr>
+                                <tr><td><code>kiro-owasp-bedrock-logging-role</code></td><td class="finding-details">IAM role allowing Bedrock to write invocation logs</td><td><span class="status passed">Deleted</span></td></tr>
+                                <tr><td>Bedrock model-invocation-logging config</td><td class="finding-details">Enable invocation logging account-wide</td><td><span class="status passed">Deleted</span></td></tr>
+                                <tr><td><code>kiro-owasp-bedrock-budget</code></td><td class="finding-details">Exercise OW-15 detective leg — budget scoped to Amazon Bedrock</td><td><span class="status passed">Deleted</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <!-- ==================== CHANGES SUMMARY ==================== -->
-  <div class="section-title">Summary of What Gets Pushed to GitHub</div>
+        <!-- ==================== WHAT'S PUSHED ==================== -->
+        <section id="whats-pushed" class="section">
+            <div class="section-title">
+                What's Being Pushed to GitHub
+                <span class="count-pill">feature/owasp-llm-phase1a-schema-and-tagging</span>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3>Commits on the Feature Branch</h3></div>
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 12%;">Phase</th>
+                                    <th style="width: 14%;">Commit</th>
+                                    <th style="width: 74%;">Summary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1a</td><td><code>2318475</code></td><td class="finding-details">Schema: add <code>Compliance_Mappings</code> field + OWASP tags for 52 existing checks (additive only)</td></tr>
+                                <tr><td>1b</td><td><code>7b883c2</code></td><td class="finding-details">Report UI: Compliance Dashboard + OWASP detail table + new Compliance column + OWASP filter</td></tr>
+                                <tr><td>2a</td><td><code>c38c87b</code></td><td class="finding-details">7 inline OWASP checks riding on BR-05 / BR-07 / AC-05 (no new Lambda)</td></tr>
+                                <tr><td>2a.1</td><td><code>d934ed8</code></td><td class="finding-details">CSV round-trip fix so Compliance_Mappings survives Lambda → S3 → consolidator → HTML</td></tr>
+                                <tr><td>2b</td><td><code>60ed506</code></td><td class="finding-details">New <code>owasp_assessments/</code> Lambda + 4 exemplar checks + infra wiring (4th parallel branch, IAM, templates)</td></tr>
+                                <tr><td>2b.2</td><td><code>937c69f</code></td><td class="finding-details">All 8 remaining OWASP checks implemented for real — OW-04 / 05 / 06 / 07 / 10 / 12 / 13 / 18</td></tr>
+                                <tr><td>3</td><td><code>abbab9f</code></td><td class="finding-details">Docs polish: README counts, SECURITY_CHECKS matrix, DEVELOPER_GUIDE OWASP section, regenerated sample report</td></tr>
+                                <tr><td>Live fix</td><td><code>7c4054e</code></td><td class="finding-details">Live-validation fix: accept <code>words</code> and <code>wordsConfig</code> in Bedrock GetGuardrail response + regression test</td></tr>
+                                <tr><td>Review docs</td><td><code>1a63fe6</code></td><td class="finding-details">docs/proposals: add proposal, PR body, and this demo review report</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 15%;">Phase</th>
-          <th style="width: 15%;">Commit</th>
-          <th style="width: 70%;">Summary</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>1a</td><td><code>2318475</code></td><td>Schema: add <code>Compliance_Mappings</code> field + OWASP tags for 52 existing checks (additive only)</td></tr>
-        <tr><td>1b</td><td><code>7b883c2</code></td><td>Report: Compliance Dashboard + OWASP detail table + new Compliance column + OWASP filter</td></tr>
-        <tr><td>2a</td><td><code>c38c87b</code></td><td>7 inline OWASP checks riding on BR-05 / BR-07 / AC-05 (no new Lambda)</td></tr>
-        <tr><td>2a.1</td><td><code>d934ed8</code></td><td>CSV round-trip fix so Compliance_Mappings survives Lambda → S3 → consolidator → HTML</td></tr>
-        <tr><td>2b</td><td><code>60ed506</code></td><td>New <code>owasp_assessments/</code> Lambda + 4 exemplar checks + infra wiring (4th parallel branch, IAM, templates)</td></tr>
-        <tr><td>2b.2</td><td><code>937c69f</code></td><td>All 8 remaining OWASP checks implemented for real — OW-04/05/06/07/10/12/13/18</td></tr>
-        <tr><td>3</td><td><code>abbab9f</code></td><td>Docs polish: README counts, SECURITY_CHECKS matrix, DEVELOPER_GUIDE OWASP section, regenerated sample report</td></tr>
-        <tr><td>Fix</td><td><code>7c4054e</code></td><td>Live-validation fix: accept <code>words</code> and <code>wordsConfig</code> in Bedrock GetGuardrail response + regression test</td></tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="card">
+                <div class="card-header"><h3>Next Step</h3></div>
+                <div class="card-body">
+                    <p class="finding-details">When you give the thumbs-up, the PR will be opened from <code>prancst2004:feature/owasp-llm-phase1a-schema-and-tagging</code> into <code>aws-samples/sample-aiml-security-assessment:main</code> using the PR body at <code>docs/proposals/PR_BODY.md</code> on the branch.</p>
+                </div>
+            </div>
+        </section>
 
-  <div class="callout">
-    <strong>Next step for review:</strong> If this looks good, I'll open a PR from
-    <code>prancst2004:feature/owasp-llm-phase1a-schema-and-tagging</code> into
-    <code>aws-samples/sample-aiml-security-assessment:main</code>. The full PR body is at
-    <code>docs/proposals/PR_BODY.md</code> on the branch.
-  </div>
-
-  <footer>
-    Demo report generated from real check fixtures and live-AWS runs · Not actual customer findings · For internal review by Agasthi Kothurkar
-  </footer>
-
+    </main>
 </div>
 
 <script>
-  const btn = document.getElementById('themeToggle');
-  const html = document.documentElement;
-  const saved = localStorage.getItem('owasp-demo-theme');
-  if (saved === 'dark') { html.setAttribute('data-theme', 'dark'); btn.textContent = 'Light Mode'; }
-  btn.addEventListener('click', () => {
-    const cur = html.getAttribute('data-theme');
-    if (cur === 'dark') { html.removeAttribute('data-theme'); localStorage.setItem('owasp-demo-theme', 'light'); btn.textContent = 'Dark Mode'; }
-    else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('owasp-demo-theme', 'dark'); btn.textContent = 'Light Mode'; }
-  });
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const themeLabel = themeToggle.querySelector('.theme-label');
+    const saved = localStorage.getItem('owasp-demo-theme');
+    if (saved === 'dark') { html.setAttribute('data-theme', 'dark'); themeLabel.textContent = 'Light Mode'; }
+    themeToggle.addEventListener('click', function() {
+        const cur = html.getAttribute('data-theme');
+        if (cur === 'dark') { html.removeAttribute('data-theme'); localStorage.setItem('owasp-demo-theme', 'light'); themeLabel.textContent = 'Dark Mode'; }
+        else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('owasp-demo-theme', 'dark'); themeLabel.textContent = 'Light Mode'; }
+    });
+
+    // Active nav tracking on scroll
+    const navItems = document.querySelectorAll('.sidebar .nav-item');
+    const sections = document.querySelectorAll('.section');
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    navItems.forEach(n => n.classList.remove('active'));
+                    // Find the nav item in the primary Navigation section that matches
+                    navItems.forEach(n => { if (n.getAttribute('href') === href) n.classList.add('active'); });
+                }
+            }
+        });
+    });
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(s => { if (window.pageYOffset >= s.offsetTop - 100) current = s.getAttribute('id'); });
+        if (current) {
+            navItems.forEach(n => {
+                n.classList.remove('active');
+                if (n.getAttribute('href') === '#' + current) n.classList.add('active');
+            });
+        }
+    });
 </script>
 </body>
 </html>
