@@ -113,6 +113,23 @@ def check_timeout() -> bool:
     return elapsed < 540  # 9 minutes hard stop
 
 
+def _serialize_compliance_mappings(row):
+    """Return a shallow copy of *row* with Compliance_Mappings JSON-serialised.
+
+    csv.DictWriter can only emit strings; the in-memory findings carry a list of
+    dicts. The consolidator reverses this by json.loads() on read.
+    """
+    out = dict(row)
+    mappings = out.get("Compliance_Mappings")
+    if mappings is None or mappings == "":
+        out["Compliance_Mappings"] = ""
+    elif isinstance(mappings, (list, tuple)):
+        out["Compliance_Mappings"] = json.dumps(list(mappings))
+    # else: already a string — leave alone
+    return out
+
+
+
 def generate_csv_report(findings: List[Dict[str, Any]]) -> str:
     """
     Generate CSV report from findings.
@@ -138,6 +155,7 @@ def generate_csv_report(findings: List[Dict[str, Any]]) -> str:
                 "Reference",
                 "Severity",
                 "Status",
+                "Compliance_Mappings",
             ],
         )
         writer.writeheader()
@@ -154,12 +172,13 @@ def generate_csv_report(findings: List[Dict[str, Any]]) -> str:
             "Reference",
             "Severity",
             "Status",
+            "Compliance_Mappings",
         ],
     )
     writer.writeheader()
 
     for finding in findings:
-        writer.writerow(finding)
+        writer.writerow(_serialize_compliance_mappings(finding))
 
     csv_content = output.getvalue()
     logger.info(f"Generated CSV report with {len(findings)} findings")

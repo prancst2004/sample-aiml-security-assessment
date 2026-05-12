@@ -1,4 +1,5 @@
 import boto3
+import json
 import csv
 import os
 import logging
@@ -37,6 +38,15 @@ def parse_csv_content(csv_content: str) -> List[Dict[str, str]]:
     csv_reader = csv.DictReader(csv_file)
 
     for row in csv_reader:
+        # Decode Compliance_Mappings JSON string back into a list
+        raw = row.get("Compliance_Mappings", "")
+        if raw:
+            try:
+                row["Compliance_Mappings"] = json.loads(raw)
+            except (json.JSONDecodeError, ValueError):
+                row["Compliance_Mappings"] = []
+        else:
+            row["Compliance_Mappings"] = []
         results.append(dict(row))
 
     return results
