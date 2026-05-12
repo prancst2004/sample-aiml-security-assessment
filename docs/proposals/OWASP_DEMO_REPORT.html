@@ -171,6 +171,21 @@
         .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
         @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .metrics { grid-template-columns: repeat(2, 1fr); } .evidence-grid { grid-template-columns: 1fr; } }
         @media (max-width: 640px) { .metrics { grid-template-columns: 1fr; } .main { padding: 20px; } }
+        /* Reading guide */
+        .reading-guide { background: var(--accent-soft); border: 2px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin-bottom: 32px; }
+        .reading-guide h3 { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .reading-guide h3 svg { width: 18px; height: 18px; }
+        .reading-guide > p { font-size: 13px; color: var(--text-2); margin-bottom: 14px; }
+        .reading-guide ol { list-style: none; counter-reset: step; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+        .reading-guide li { counter-increment: step; position: relative; padding: 10px 12px 10px 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; line-height: 1.5; color: var(--text); }
+        .reading-guide li::before { content: counter(step); position: absolute; left: 10px; top: 10px; width: 22px; height: 22px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .reading-guide li strong { color: var(--accent); display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .reading-guide li .hint { display: block; font-size: 11px; color: var(--text-3); margin-top: 4px; }
+        /* Table intro card */
+        .table-intro { background: var(--accent-soft); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: -20px -20px 16px; font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+        .card-body .table-intro:first-child { margin-top: -20px; }
+        .table-intro strong { color: var(--text); font-weight: 600; }
+        .table-intro code { font-size: 11px; }
     </style>
 </head>
 <body>
@@ -290,6 +305,25 @@
             <div><strong>Review demo.</strong> This page previews how the shipped HTML report looks after the OWASP LLM Top 10 work lands (Phases 1–3). The Compliance Dashboard, OWASP table, and findings preview come from the fixture used to regenerate <code>sample-reports/security_assessment_single_account.html</code>. The Live AWS Evidence section is copied verbatim from real runs in account 676206921018 / us-east-1 on 2026-05-12.</div>
         </div>
 
+        <!-- Reading guide -->
+        <div class="reading-guide">
+            <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                How to Read This Report (7 sections, ~5 min)
+            </h3>
+            <p>The report is organised into seven sections (sidebar on the left). Each section answers one question; together they make the case that Phase 1–3 is ready to merge.</p>
+            <ol>
+                <li><strong>Overview</strong>Headline metrics + what's about to fail most loudly in an example run. Start here for scale.<span class="hint">5 metric cards + priority alerts + legend</span></li>
+                <li><strong>Compliance Dashboard</strong>Does this PR move the compliance needle? Four framework cards (OWASP active, NIST / ATLAS / HIPAA planned).<span class="hint">1 grid of 4 cards</span></li>
+                <li><strong>OWASP Top 10 for LLM</strong>Per-category status for LLM01..LLM10. This is the "headline chart" the customer will see.<span class="hint">1 table · 10 rows · links to OWASP</span></li>
+                <li><strong>New OWASP Checks</strong>Full audit trail of all 18 additions (OW-01..OW-18) — name, severity, OWASP mapping, delivery module, coverage type, AWS docs.<span class="hint">1 table · 18 rows · links to AWS docs</span></li>
+                <li><strong>Findings Preview</strong>What a single finding looks like end-to-end — including the Resolution and Reference fields that drive remediation. Sample rows from the real fixture.<span class="hint">1 explainer + 1 table · 6 sample rows</span></li>
+                <li><strong>Live AWS Evidence</strong>Proof the code works against real AWS. Two side-by-side console snippets from the OWASP Lambda, one from Bedrock, and a state-transition table showing Failed→Passed flips.<span class="hint">2 consoles + 1 console + 1 transitions table</span></li>
+                <li><strong>Testing + What's Pushed</strong>Regression summary (152 tests across 9 modules), seeded-resource teardown ledger, and the 9-commit map of what the PR contains.<span class="hint">3 tables — per-module tests, teardown, commits</span></li>
+            </ol>
+        </div>
+
+
         <!-- ==================== OVERVIEW ==================== -->
         <section id="overview" class="section">
             <div class="page-header">
@@ -378,6 +412,7 @@
                     <a href="#whats-pushed" style="font-size: 12px; color: var(--accent); text-decoration: none;">View full PR summary</a>
                 </div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 1 of 7 — Severity &amp; Compliance Legend.</strong> Shows how to read every other status pill in this report. High = remediate within 7 days; Non-Compliant = at least one mapped check failed; Partial = app-layer scope prevents a full green. Same semantics the real shipped report uses.</div>
                     <table style="min-width: 100%; table-layout: fixed;">
                         <thead>
                             <tr>
@@ -474,6 +509,7 @@
             <div class="card">
                 <div class="card-header"><h3>Compliance Status by Vulnerability Category</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 2 of 7 — OWASP Top 10 headline chart.</strong> One row per OWASP LLM category (LLM01..LLM10). The <em>Status</em> column is the single number a customer cares about — <span class="status compliant" style="padding: 2px 6px; font-size: 10px;">Compliant</span> all mapped checks passed, <span class="status partial" style="padding: 2px 6px; font-size: 10px;">Partial</span> app-layer dimension so green is never possible (LLM03, LLM05, LLM07), <span class="status non-compliant" style="padding: 2px 6px; font-size: 10px;">Non-Compliant</span> at least one check failed. The Docs column links straight to each OWASP page.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -583,6 +619,7 @@
             <div class="card">
                 <div class="card-header"><h3>OW-01 through OW-18</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 3 of 7 — What we're adding (all 18 new checks).</strong> One row per new OW-XX check. Columns: <em>Name</em> · <em>Severity</em> (default finding severity) · <em>OWASP</em> (which LLM-XX category it maps to) · <em>Delivery Module</em> (lives either inside an existing Lambda or in the new <code>owasp_assessments/</code>) · <em>Coverage Type</em> (<code>full</code> / <code>compensating</code> / <code>partial-app-layer</code> — drives how the dashboard caps status). Docs column links to the exact AWS page the check's <code>reference</code> field emits.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -645,6 +682,7 @@
             <div class="card">
                 <div class="card-header"><h3>Sample Findings with <code>Compliance_Mappings</code> + Remediation</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 4 of 7 — What one finding looks like end-to-end.</strong> These are real rows from the fixture that regenerates <code>sample-reports/security_assessment_single_account.html</code>. Notice each row has: the <em>Finding</em> name + detail, a prescriptive <em>Resolution</em> (naming the specific API or parameter to change), the new <em>Compliance</em> badge, severity/status pills, and a one-click <em>AWS Docs</em> link — exactly the pattern the existing 51 service-level checks already use.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -802,6 +840,7 @@
             <div class="card">
                 <div class="card-header"><h3>State Transitions Observed in the Seeded Run</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 5 of 7 — Proof the checks actually fire correctly.</strong> Each row shows one OWASP check's finding before and after seeding a specific AWS resource. If the checks are wired right, seeding a guardrail with <code>PROMPT_ATTACK output=NONE</code> should flip OW-01 from N/A to Failed; adding a Bedrock-scoped Budget should flip OW-15 detective from Failed to Passed — and they do. This is the most concrete evidence in the report.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -859,6 +898,7 @@
             <div class="card">
                 <div class="card-header"><h3>Per-Module Test Breakdown</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 6 of 7 — Unit-test regression.</strong> 152 tests across 9 modules all pass. The only FAIL is a pre-existing upstream assertion in <code>test_generate_report.py</code> (<code>service-badge</code> vs <code>service-icon</code>) that was already failing before Phase 1 — not caused by this work.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -888,6 +928,7 @@
             <div class="card">
                 <div class="card-header"><h3>Resources Seeded &amp; Torn Down During Live Validation</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 7a of 7 — Cleanup ledger.</strong> The five AWS resources we created to exercise the real pass/fail paths, all tagged <code>kiro-owasp-validation=true</code> and deleted after testing. The account is back to its pre-validation baseline — you can verify with <code>aws bedrock list-guardrails</code>.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -919,6 +960,7 @@
             <div class="card">
                 <div class="card-header"><h3>Commits on the Feature Branch</h3></div>
                 <div class="card-body" style="padding: 0;">
+                    <div class="table-intro"><strong>Table 7b of 7 — The PR's commit map.</strong> Nine commits on <code>feature/owasp-llm-phase1a-schema-and-tagging</code>, organised by phase. Each commit is a logical unit — you could review them in order and the branch would build + pass tests at every step.</div>
                     <div class="table-wrap">
                         <table>
                             <thead>
