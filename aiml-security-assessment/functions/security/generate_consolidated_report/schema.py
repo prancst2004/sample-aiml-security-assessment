@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from pydantic import BaseModel, Field, HttpUrl, validator
 from datetime import datetime
 
@@ -22,6 +22,14 @@ class Finding(BaseModel):
     Reference: str = Field(..., description="Documentation reference URL")
     Severity: SeverityEnum = Field(..., description="Severity level of the finding")
     Status: StatusEnum = Field(..., description="Current status of the finding")
+    Compliance_Mappings: Optional[List[Dict[str, Any]]] = Field(
+        default_factory=list,
+        description=(
+            "Compliance-framework mappings for this finding (e.g., OWASP LLM, "
+            "NIST AI RMF, MITRE ATLAS, HIPAA). Backward-compatible: callers that "
+            "do not populate this field get an empty list."
+        ),
+    )
 
     @validator('Reference')
     def validate_reference_url(cls, v):
@@ -49,11 +57,12 @@ def create_finding(
     resolution: str,
     reference: str,
     severity: SeverityEnum,
-    status: StatusEnum
+    status: StatusEnum,
+    compliance_mappings: Optional[List[Dict[str, Any]]] = None,
 ) -> Finding:
     """
     Create a validated finding object
-    
+
     Args:
         finding_name: Name of the finding
         finding_details: Detailed description
@@ -61,10 +70,12 @@ def create_finding(
         reference: Documentation URL
         severity: Severity level
         status: Current status
-    
+        compliance_mappings: Optional list of compliance-framework mappings.
+            Defaults to empty list for backward compatibility.
+
     Returns:
         Finding: Validated finding object
-    
+
     Raises:
         ValidationError: If any field fails validation
     """
@@ -74,6 +85,7 @@ def create_finding(
         Resolution=resolution,
         Reference=reference,
         Severity=severity,
-        Status=status
+        Status=status,
+        Compliance_Mappings=compliance_mappings or [],
     )
     return dict(finding.model_dump())  # Convert to regular dictionary
