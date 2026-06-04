@@ -192,7 +192,7 @@ class TestOutputFilter:
         out = evaluate_guardrail_owasp_checks(
             client, [{"id": "gr1", "name": "GR1"}]
         )
-        ow08 = _by_check_id(out, "OW-08")
+        ow08 = _by_check_id(out, "OW-08")  # noqa: F841
         assert ow08[0]["Status"] == "Passed"
         assert "compensating control" in ow08[0]["Finding_Details"].lower()
 
@@ -202,7 +202,7 @@ class TestOutputFilter:
         out = evaluate_guardrail_owasp_checks(
             client, [{"id": "gr1", "name": "GR1"}]
         )
-        ow08 = _by_check_id(out, "OW-08")
+        ow08 = _by_check_id(out, "OW-08")  # noqa: F841
         assert ow08[0]["Status"] == "Passed"
 
     def test_topic_policy_passes(self):
@@ -213,7 +213,7 @@ class TestOutputFilter:
         out = evaluate_guardrail_owasp_checks(
             client, [{"id": "gr1", "name": "GR1"}]
         )
-        ow08 = _by_check_id(out, "OW-08")
+        ow08 = _by_check_id(out, "OW-08")  # noqa: F841
         assert ow08[0]["Status"] == "Passed"
 
     def test_none_of_the_controls_fails(self):
@@ -222,7 +222,7 @@ class TestOutputFilter:
         out = evaluate_guardrail_owasp_checks(
             client, [{"id": "gr1", "name": "GR1"}]
         )
-        ow08 = _by_check_id(out, "OW-08")
+        ow08 = _by_check_id(out, "OW-08")  # noqa: F841
         # PROMPT_ATTACK has outputStrength=HIGH in default, which counts as output filter
         # So let's build one that explicitly doesn't:
         gr2 = _guardrail(prompt_attack_input="HIGH", prompt_attack_output="")
@@ -326,7 +326,7 @@ class TestInputSizeLimit:
         ow15 = _by_check_id(out, "OW-15")
         assert ow15[0]["Status"] == "Passed"
         # Also verify OW-08 sees the word list as an output-side control
-        ow08 = _by_check_id(out, "OW-08")
+        ow08 = _by_check_id(out, "OW-08")  # noqa: F841
         assert ow08[0]["Status"] == "Passed"
 
 

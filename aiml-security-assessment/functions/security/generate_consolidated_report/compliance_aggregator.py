@@ -11,7 +11,7 @@ All functions are pure — no I/O, no mutation of inputs. Easy to unit test.
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 # ---------------------------------------------------------------------------
 # OWASP LLM Top 10 (2025) descriptive catalog

@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel, Field, HttpUrl, validator
-from datetime import datetime
+from pydantic import BaseModel, Field, validator
 
 class SeverityEnum(str, Enum):
     HIGH = "High"
