@@ -1,6 +1,6 @@
 # Security Checks Reference
 
-This document provides a comprehensive reference for all 69 security checks performed by the AI/ML Security Assessment framework (51 service-level checks plus 18 OWASP LLM Top 10 extensions).
+This document provides a comprehensive reference for all 70 security checks performed by the AI/ML Security Assessment framework (52 service-level checks plus 18 OWASP LLM Top 10 extensions).
 
 ## Table of Contents
 
@@ -9,7 +9,7 @@ This document provides a comprehensive reference for all 69 security checks perf
 - [Severity Levels](#severity-levels)
 - [Status Values](#status-values)
 - [Amazon SageMaker AI Security Checks (25)](#amazon-sagemaker-ai-security-checks-25)
-- [Amazon Bedrock Security Checks (13)](#amazon-bedrock-security-checks-13)
+- [Amazon Bedrock Security Checks (14)](#amazon-bedrock-security-checks-14)
 - [Amazon Bedrock AgentCore Security Checks (13)](#amazon-bedrock-agentcore-security-checks-13)
 - [OWASP LLM Top 10 Extensions (18)](#owasp-llm-top-10-extensions-18)
 
@@ -22,7 +22,7 @@ The framework evaluates your AI/ML workloads against AWS security best practices
 | Service | Number of Checks | Focus Areas |
 |---------|------------------|-------------|
 | Amazon SageMaker AI | 25 | Security Hub controls, encryption, network isolation, IAM, MLOps |
-| Amazon Bedrock | 13 | Guardrails, encryption, VPC endpoints, IAM permissions, logging |
+| Amazon Bedrock | 14 | Guardrails, encryption, VPC endpoints, IAM permissions, logging |
 | Amazon Bedrock AgentCore | 13 | VPC configuration, encryption, observability, resource policies |
 | OWASP LLM Top 10 Extensions | 18 | Prompt injection, sensitive info disclosure, supply chain, data/model poisoning, improper output handling, excessive agency, system prompt leakage, vector/embedding weaknesses, misinformation, unbounded consumption |
 
@@ -35,7 +35,7 @@ Each security check has a unique identifier with a service prefix:
 | Prefix | Service | Example |
 |--------|---------|---------|
 | **SM-XX** | Amazon SageMaker | SM-01, SM-25 |
-| **BR-XX** | Amazon Bedrock | BR-01, BR-13 |
+| **BR-XX** | Amazon Bedrock | BR-01, BR-14 |
 | **AC-XX** | Amazon Bedrock AgentCore | AC-01, AC-13 |
 | **OW-XX** | OWASP LLM Top 10 Extensions | OW-01, OW-18 |
 
@@ -198,7 +198,7 @@ Each security check has a unique identifier with a service prefix:
 
 ---
 
-## Amazon Bedrock Security Checks (13)
+## Amazon Bedrock Security Checks (14)
 
 ### BR-01: AWS IAM Least Privilege
 
@@ -264,6 +264,11 @@ Each security check has a unique identifier with a service prefix:
 
 - **Severity:** Medium
 - **Description:** Validates Bedrock Flows have guardrails attached.
+
+### BR-14: Stale Bedrock Access
+
+- **Severity:** Medium
+- **Description:** Detects IAM roles and users with Bedrock permissions that have not accessed the service in the past 60 days, helping enforce least-privilege access.
 
 ---
 
