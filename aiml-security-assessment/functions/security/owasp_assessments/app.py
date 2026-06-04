@@ -1,27 +1,24 @@
 """
 OWASP LLM Top 10 Security Assessment Lambda.
 
-Aggregates the OW-XX checks that do not fit naturally into an existing
-per-service Lambda (Bedrock, SageMaker, AgentCore). See
-docs/proposals/OWASP_LLM_TOP10_PROPOSAL.md §5 for the full matrix.
+Aggregates the OW-XX checks mapped to the OWASP Top 10 for Large Language
+Model Applications (2025). Checks that do not fit naturally into the existing
+per-service Lambdas (Bedrock, SageMaker, AgentCore) run here.
 
-Phase 2b delivered the scaffolding and 4 exemplar checks. Phase 2b.2
-replaces the 8 stubs with full implementations:
+Checks implemented in this Lambda:
 
-    OW-04  Invocation log retention & access       (llm02_log_retention)
-    OW-05  Imported/custom model provenance        (llm03_model_provenance)
-    OW-06  JumpStart / Marketplace inventory       (llm03_jumpstart_inventory)
-    OW-07  KB ingestion role scope                 (llm04_kb_ingestion_role)
-    OW-10  Human-in-the-loop confirmation flows    (llm06_confirmation)
-    OW-12  Vector store network isolation          (llm08_vector_isolation)
-    OW-13  Multi-tenant KB isolation               (llm08_vector_isolation)
-    OW-18  Multi-agent sub-agent inventory         (llm06_sub_agent_inventory)
-
-Plus the 4 exemplar checks from Phase 2b:
-    OW-02  Knowledge Base source trust
-    OW-09  Agent action group wildcards
-    OW-15  Detective consumption controls
-    OW-17  KB retrieval resource policy
+    OW-02  Knowledge Base source trust            (llm02_kb_trust)
+    OW-04  Invocation log retention & access      (llm02_log_retention)
+    OW-05  Imported/custom model provenance       (llm03_model_provenance)
+    OW-06  JumpStart / Marketplace inventory      (llm03_jumpstart_inventory)
+    OW-07  KB ingestion role scope                (llm04_kb_ingestion_role)
+    OW-09  Agent action group wildcards           (llm06_agent_agency)
+    OW-10  Human-in-the-loop confirmation flows   (llm06_confirmation)
+    OW-12  Vector store network isolation         (llm08_vector_isolation)
+    OW-13  Multi-tenant KB isolation              (llm08_vector_isolation)
+    OW-15  Detective consumption controls         (llm10_consumption)
+    OW-17  KB retrieval resource policy           (llm02_kb_retrieval)
+    OW-18  Multi-agent sub-agent inventory        (llm06_sub_agent_inventory)
 
 Writes one CSV report per execution to the shared assessment bucket at:
     owasp_security_report_{execution_id}.csv
@@ -41,13 +38,13 @@ from botocore.config import Config
 
 from schema import create_finding, SeverityEnum, StatusEnum
 
-# Phase 2b exemplar checks
+# Bedrock-agent checks
 from owasp_checks.llm02_kb_trust import evaluate_kb_source_trust
 from owasp_checks.llm02_kb_retrieval import evaluate_kb_retrieval_policy
 from owasp_checks.llm06_agent_agency import evaluate_action_group_wildcards
 from owasp_checks.llm10_consumption import evaluate_detective_consumption_controls
 
-# Phase 2b.2 checks
+# Bedrock model-plane checks
 from owasp_checks.llm02_log_retention import evaluate_invocation_log_retention
 from owasp_checks.llm03_model_provenance import evaluate_model_provenance
 from owasp_checks.llm03_jumpstart_inventory import evaluate_jumpstart_marketplace_inventory

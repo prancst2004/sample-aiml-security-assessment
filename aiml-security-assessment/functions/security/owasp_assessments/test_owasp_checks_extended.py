@@ -1,9 +1,8 @@
 """
-Unit tests for the Phase 2b.2 OWASP checks (OW-04, OW-05, OW-06, OW-07,
+Unit tests for OWASP LLM checks (OW-04, OW-05, OW-06, OW-07,
 OW-10, OW-12/13, OW-18).
 
-Same approach as Phase 2b tests: unittest.mock.MagicMock for boto3
-clients, one pytest class per check.
+Uses unittest.mock.MagicMock for boto3 clients, one pytest class per check.
 """
 
 from __future__ import annotations

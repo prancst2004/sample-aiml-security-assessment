@@ -1,5 +1,5 @@
 """
-Unit tests for the Phase 2b OWASP exemplar checks.
+Unit tests for OWASP LLM checks (OW-02, OW-09, OW-15, OW-17).
 
 Uses unittest.mock.MagicMock rather than moto so the tests run without
 network or boto3-stubber complexity. Each check accepts injected clients

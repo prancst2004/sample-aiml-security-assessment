@@ -2,9 +2,9 @@
 Compliance aggregation helpers for the AI/ML Security Assessment report.
 
 Single responsibility: turn the raw findings list (each with
-Compliance_Mappings attached per Phase 1a) into the shapes the HTML
-template consumes for the Compliance Dashboard and per-framework
-detail sections.
+Compliance_Mappings attached) into the shapes the HTML template
+consumes for the Compliance Dashboard and per-framework detail
+sections.
 
 All functions are pure — no I/O, no mutation of inputs. Easy to unit test.
 """
@@ -89,8 +89,8 @@ OWASP_LLM_CATALOG: List[Dict[str, str]] = [
 # ---------------------------------------------------------------------------
 # Framework placeholder catalog
 #
-# Phase 1b ships OWASP populated and the other three as informational
-# "planned" placeholders — honest scope signaling (see proposal §6).
+# OWASP LLM Top 10 is fully populated. NIST AI RMF, MITRE ATLAS, and
+# HIPAA are informational placeholders for future framework coverage.
 # ---------------------------------------------------------------------------
 
 FRAMEWORK_PLACEHOLDERS: List[Dict[str, str]] = [

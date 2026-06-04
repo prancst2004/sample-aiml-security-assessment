@@ -381,13 +381,13 @@ def _evaluate_single_guardrail(
                 f"Guardrail '{name}' has no wordPolicy that constrains input. "
                 f"Consider adding a wordsConfig entry to block oversized / adversarial "
                 f"inputs that drive up token cost. This finding addresses only the "
-                f"proactive leg of LLM10; Phase 2b will add a separate detective check "
-                f"for CloudWatch alarms / Budgets."
+                f"proactive leg of LLM10; pair with CloudWatch alarms and AWS Budgets "
+                f"for complete consumption monitoring (see OW-15)."
             ),
             resolution=(
                 "Add a wordPolicy with wordsConfig or managedWordLists to block "
-                "adversarial oversized inputs. Pair with CloudWatch alarms / Budgets "
-                "(covered by OW-15b in Phase 2b)."
+                "adversarial oversized inputs. Pair with CloudWatch alarms and AWS Budgets "
+                "to complete consumption controls (OW-15)."
             ),
             severity="Medium",
             status="Failed",
