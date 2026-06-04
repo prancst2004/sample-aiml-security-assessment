@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock
 
-import pytest
 from botocore.exceptions import ClientError
 
 from owasp_checks.llm02_log_retention import evaluate_invocation_log_retention

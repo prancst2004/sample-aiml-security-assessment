@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock
 
-import pytest
 from botocore.exceptions import ClientError
 
 from owasp_checks.llm02_kb_trust import evaluate_kb_source_trust

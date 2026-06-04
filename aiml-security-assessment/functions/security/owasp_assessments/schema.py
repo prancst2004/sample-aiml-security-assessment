@@ -1,21 +1,19 @@
 from enum import Enum
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel, Field, HttpUrl, validator
-from datetime import datetime
+from pydantic import BaseModel, Field, validator
 import re
 
 try:
     # Each service module keeps its own copy of compliance_mappings.py
     # (mirrors the existing per-module schema.py duplication pattern).
     from .compliance_mappings import (
-        ComplianceMapping,
+        ComplianceMapping,  # noqa: F401 — re-exported
         get_compliance_mappings,
     )
 except ImportError:
     # Fallback for flat-import test environments (e.g., running pytest from
     # the module directory rather than as a package).
     from compliance_mappings import (  # type: ignore
-        ComplianceMapping,
         get_compliance_mappings,
     )
 
